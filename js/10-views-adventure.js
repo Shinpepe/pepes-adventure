@@ -164,7 +164,7 @@ function showBattle(monster, areaId) {
         <div class="mhp-label" id="b-hplabel">HP : ${fmt(mHp)} / ${fmt(mMaxHp)}</div>
       </div>
       <div class="monster-shadow"></div>
-      <div class="monster-emoji" id="b-monster">${aimg(monster.img,monster.emoji,130,'',2.05)}</div>
+      <div class="monster-emoji enter" id="b-monster">${aimg(monster.img,monster.emoji,130,'',2.05)}</div>
     </div>
     <div class="battle-panel" id="b-panel"></div>
     ${sidebarHTML()}${logHTML()}`;
@@ -197,6 +197,7 @@ function showBattle(monster, areaId) {
     mainEl.appendChild(d);
     setTimeout(()=>d.remove(), 1200);
   }
+  later(()=>mEl.classList.remove('enter'), 350);
   function shakeMonster(big) {
     mEl.classList.remove('shake-s','shake-l','hurt','hurt-skill'); void mEl.offsetWidth;
     mEl.classList.add(big?'shake-l':'shake-s');
