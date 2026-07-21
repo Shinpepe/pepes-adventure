@@ -1024,7 +1024,7 @@ function showVillage(location='MAIN', npcMsg='') {
       SHOP_NPC:  { title:'장비 상점', npc:NPC_EMOJI.shop[gen], img:npcImg('shop'), bg:'bg-shop' },
       INN_NPC:   { title:'마을 여관', npc:NPC_EMOJI.inn[gen], img:npcImg('inn'), bg:'bg-inn' },
       REST_NPC:  { title:'마을 식당', npc:NPC_EMOJI.chef[gen], img:npcImg('chef'), bg:'bg-rest' },
-      CONST_NPC: { title:'공사 중...', npc:'', bg:'bg-const' },
+      CONST_NPC: { title:'공사 중...', npc:'', shadowOnly:npcImg('chef').replace('.png','_shadow.png'), bg:'bg-const' },
       CASINO:    { title:'도박장', npc:'', bg:'bg-casino' }
     }[location];
     let buttons = '';
@@ -1049,11 +1049,13 @@ function showVillage(location='MAIN', npcMsg='') {
     }
     const dateKey = { INN_NPC:'inn', SHOP_NPC:'shop', REST_NPC:'chef' }[location];
     const showDate = dateKey && s.npc_affinity[dateKey].grade === 'best';
-    const shadowFile = conf.img ? conf.img.replace('.png','_shadow.png') : '';
+    const shadowFile = conf.img ? conf.img.replace('.png','_shadow.png') : (conf.shadowOnly || '');
     const npcHTML = conf.img ? `
         <img src="${ASSET_BASE}${shadowFile}" alt="" style="position:absolute;left:52px;top:294px;width:266px;height:262px;object-fit:contain" onerror="this.remove()">
         <div style="position:absolute;left:60px;top:300px;width:250px;height:250px;font-size:130px;visibility:hidden;display:flex;align-items:center;justify-content:center" id="npc-fb">${conf.npc}</div>
-        <img src="${ASSET_BASE}${conf.img}" alt="" style="position:absolute;left:60px;top:300px;width:250px;height:250px;object-fit:contain" onerror="document.getElementById('npc-fb').style.visibility='visible';this.remove()">` : '';
+        <img src="${ASSET_BASE}${conf.img}" alt="" style="position:absolute;left:60px;top:300px;width:250px;height:250px;object-fit:contain" onerror="document.getElementById('npc-fb').style.visibility='visible';this.remove()">`
+      : (shadowFile ? `
+        <img src="${ASSET_BASE}${shadowFile}" alt="" style="position:absolute;left:52px;top:294px;width:266px;height:262px;object-fit:contain" onerror="this.remove()">` : '');
     const bubbleHTML = npcMsg ? `
         <div style="position:absolute;left:340px;top:405px;transform:translateY(-50%);width:350px;min-height:120px;background:rgba(50,40,30,.86);border:2px solid #b48c50;display:flex;align-items:center;justify-content:center;text-align:center;font-size:14px;line-height:1.55;white-space:pre-line;padding:12px 20px;box-sizing:border-box">${esc(npcMsg)}</div>
         <div style="position:absolute;left:322px;top:390px;border:10px solid transparent;border-right:14px solid #b48c50"></div>
@@ -1543,8 +1545,7 @@ function showChest(areaId) {
   const area = AREAS[areaId];
   let busy = false;
   screenEl.innerHTML = `
-    <div class="${area.bg}" style="position:absolute;left:250px;top:0;width:750px;height:550px"></div>
-    <div class="main-area"><div class="main-dim"></div>
+    <div class="main-area"><div class="${area.bg}" style="position:absolute;inset:-14px"></div><div class="main-dim"></div>
       <div class="monster-shadow"></div>
       <div id="chest-icon" style="position:absolute;left:50%;top:170px;transform:translateX(-50%);font-size:140px;transition:opacity .35s;filter:drop-shadow(4px 8px 6px rgba(0,0,0,.4))">${aimg('monster/chest.png','📦',140)}</div>
       <div id="chest-text" style="position:absolute;left:0;right:0;top:80px;text-align:center;font-size:20px;text-shadow:2px 2px 0 #000">수상한 상자를 발견했다.</div>
@@ -1617,8 +1618,8 @@ function showBattle(monster, areaId) {
   engine.addLog(`${monster.name}와(과) 전투 시작!`);
 
   screenEl.innerHTML = `
-    <div class="${area.bg}" style="position:absolute;left:250px;top:0;width:750px;height:550px"></div>
     <div class="main-area" id="battle-main">
+      <div class="${area.bg}" style="position:absolute;inset:-14px"></div>
       <div class="main-dim"></div>
       <div class="monster-name" id="b-name">${esc(monster.name)}</div>
       <div class="mhp-wrap">
@@ -2345,7 +2346,7 @@ function showHoldem() {
         <div style="font-size:13px;color:#c8c8c8">플레이어 <span id="hd-pname"></span></div>
         <div id="hd-hole" style="margin-top:8px;min-height:86px"></div>
       </div>
-      <div id="hd-msg" style="text-align:center;font-size:15px;font-weight:bold;margin-top:6px;height:22px"></div>
+      <div id="hd-msg" style="position:absolute;right:14px;top:12px;max-width:250px;background:rgba(10,10,24,.85);border:1px solid rgb(80,100,180);padding:8px 12px;font-size:13px;font-weight:bold;text-align:right;line-height:1.6;white-space:pre-line;display:none"></div>
     </div>
     <div class="pager" id="hd-panel" style="position:absolute;left:250px;width:750px;bottom:172px;gap:10px"></div>
     ${sidebarHTML()}${logHTML()}`;
@@ -2357,6 +2358,7 @@ function showHoldem() {
   function msg(t, color='#fff') {
     const el = document.getElementById('hd-msg');
     el.textContent = t; el.style.color = color;
+    el.style.display = t ? 'block' : 'none';
   }
   function render(showAI=false) {
     updateInfo();
