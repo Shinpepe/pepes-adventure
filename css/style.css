@@ -133,7 +133,7 @@ body { font-family:'MaplestoryLight', 'DungGeunMo','Malgun Gothic',sans-serif; c
                   filter:drop-shadow(6px 10px 8px rgba(0,0,0,.45)); }
 @keyframes mpop { 0%{transform:translate(-50%,-46%) scale(.82);opacity:0}
   100%{transform:translate(-50%,-50%) scale(1);opacity:1} }
-.monster-emoji { animation:mpop .3s ease-out; }
+.monster-emoji.enter { animation:mpop .3s ease-out; }
 @keyframes mshake-s { 0%,100%{transform:translate(-50%,-50%)}
   20%{transform:translate(calc(-50% - 6px),calc(-50% + 4px))} 40%{transform:translate(calc(-50% + 6px),calc(-50% - 4px))}
   60%{transform:translate(calc(-50% - 4px),calc(-50% - 3px))} 80%{transform:translate(calc(-50% + 4px),calc(-50% + 3px))} }
