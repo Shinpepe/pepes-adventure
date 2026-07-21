@@ -90,24 +90,6 @@ function refreshLog() {
   /* 최신(위)을 보고 있었으면 그대로, 과거를 읽는 중이면 위치 유지 */
   el.scrollTop = wasScrolled ? prevTop + (el.scrollHeight - prevH) : 0;
 }
-function stagePos(el) {
-  /* 화면 스케일을 역산해 스테이지 좌표(1000x700)로 변환 */
-  const wrap = document.getElementById('scale-wrap');
-  const wr = wrap.getBoundingClientRect();
-  const scale = wr.width / 1000;
-  const r = el.getBoundingClientRect();
-  return { x:(r.left - wr.left)/scale, y:(r.top - wr.top)/scale, w:r.width/scale };
-}
-function spawnStatFloat(anchorEl, text, color) {
-  if (!anchorEl || !screenEl) return;
-  const p = stagePos(anchorEl);
-  const f = document.createElement('div');
-  f.className = 'stat-float';
-  f.textContent = text;
-  f.style.cssText += `;left:${Math.round(p.x + p.w + 10)}px;top:${Math.round(p.y - 2)}px;color:${color}`;
-  screenEl.appendChild(f);
-  setTimeout(()=>f.remove(), 1100);
-}
 function animateGoldCount(from, to) {
   const el = document.getElementById('sb-gold-v');
   if (!el) return;
@@ -127,15 +109,8 @@ function refreshSidebar() {
   const pg = _prevGold, pe = _prevExp, pl = _prevLv;
   const old = screenEl.querySelector('.sidebar');
   if (old) { old.outerHTML = sidebarHTML(); }
-  const goldRow = document.getElementById('sb-gold-row');
   if (old && pg !== null && s.gold !== pg) {
-    const d = s.gold - pg;
-    spawnStatFloat(goldRow, (d>0?'+':'') + fmt(d), d>0 ? '#ffd76a' : '#ff9d94');
-    animateGoldCount(pg, s.gold);
-  }
-  if (old && pe !== null && pl === s.level && s.exp > pe) {
-    const gauges = screenEl.querySelectorAll('.sidebar .gauge-wrap');
-    spawnStatFloat(gauges[1], '+' + fmt(s.exp - pe) + ' EXP', '#74c0fc');
+    animateGoldCount(pg, s.gold);   /* 플로팅 없이 카운트업만 */
   }
   _prevGold = s.gold; _prevExp = s.exp; _prevLv = s.level;
 }
