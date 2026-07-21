@@ -313,7 +313,9 @@ function showBattle(monster, areaId) {
     }
     engine.checkTitles();
     engine.addLog(`승리! +${fmt(goldReward)}Gold / +${fmt(expReward)}EXP를 얻었습니다.`);
-    panel.innerHTML = '';
+    /* 버튼은 유지하되 비활성화 (레이아웃 유지, 입력만 차단) */
+    showingSkills = false; mainButtons();
+    panel.querySelectorAll('.btn').forEach(b=>b.classList.add('disabled'));
     /* 1) 그림자와 함께 소멸 → 2) 빈 자리에서 전리품 */
     mEl.classList.remove('hurt','hurt-skill','shake-s','shake-l');
     later(()=>{
