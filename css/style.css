@@ -1,12 +1,18 @@
 
 @font-face {
+  /* 메이플스토리체를 assets/fonts/ 에 넣으면 자동 적용, 없으면 둥근모 폴백 */
+  font-family: 'MaplestoryLight';
+  src: url('assets/fonts/Maplestory Light.ttf') format('truetype');
+  font-display: swap;
+}
+@font-face {
   font-family: 'DungGeunMo';
   src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2107@1.1/DungGeunMo.woff') format('woff');
   font-weight: normal; font-style: normal; font-display: swap;
 }
 * { margin:0; padding:0; box-sizing:border-box; user-select:none; }
 html,body { width:100%; height:100%; background:#0b0d10; overflow:hidden; }
-body { font-family:'DungGeunMo','Malgun Gothic',sans-serif; color:#f0f0f0;
+body { font-family:'MaplestoryLight', 'DungGeunMo','Malgun Gothic',sans-serif; color:#f0f0f0;
        display:flex; align-items:center; justify-content:center; }
 
 #scale-wrap { width:1000px; height:700px; transform-origin:center center; }
@@ -24,7 +30,7 @@ body { font-family:'DungGeunMo','Malgun Gothic',sans-serif; color:#f0f0f0;
 .btn:active:not(.disabled) { background:rgba(20,20,20,1); color:#c8c8c8; transform:translateY(1px); }
 .btn.disabled { background:rgba(30,30,30,.4); border-color:#3c3c3c; color:#646464; cursor:default; }
 .btn.selected { background:rgba(25,70,75,1); }
-.btn.small { font-size:11px; padding:8px 4px; }
+.btn.small { font-size:12px; padding:8px 4px; }
 
 /* ---------- 게임 프레임 (사이드바 + 로그) ---------- */
 .sidebar {
@@ -49,7 +55,7 @@ body { font-family:'DungGeunMo','Malgun Gothic',sans-serif; color:#f0f0f0;
 .logwin {
   position:absolute; left:250px; bottom:0; width:750px; height:150px;
   background:#000; border-top:1px solid gold; padding:12px 20px;
-  font-size:11px; line-height:2.4; overflow-y:auto; overflow-x:hidden; z-index:5;
+  font-size:12px; line-height:2.3; overflow-y:auto; overflow-x:hidden; z-index:5;
   scrollbar-width:thin; scrollbar-color:#3c3c46 #000;
 }
 .logwin::-webkit-scrollbar { width:8px; }
@@ -62,10 +68,6 @@ body { font-family:'DungGeunMo','Malgun Gothic',sans-serif; color:#f0f0f0;
 .logwin .lg-sys  { color:#93a1b0; }   /* 시스템/구분선 — 회청색 */
 .logwin div:first-child { animation:logfade .3s ease-out; }
 @keyframes logfade { from{opacity:0; transform:translateY(-3px)} to{opacity:1; transform:none} }
-.stat-float { position:absolute; z-index:40; font-size:13px; font-weight:bold; pointer-events:none;
-              text-shadow:1px 1px 0 #000, -1px 1px 0 #000; animation:statfloat 1.05s ease-out forwards; }
-@keyframes statfloat { 0%{opacity:0; transform:translateY(4px)} 15%{opacity:1}
-  70%{opacity:1} 100%{opacity:0; transform:translateY(-22px)} }
 
 /* ---------- 배경 (지역별 CSS 그라디언트) ---------- */
 .bg-town     { background:linear-gradient(180deg,#7ec8e3 0%,#a8d8b9 55%,#5a8f5a 100%); }
@@ -141,7 +143,7 @@ body { font-family:'DungGeunMo','Malgun Gothic',sans-serif; color:#f0f0f0;
   80%{transform:translate(calc(-50% - 5px),calc(-50% + 3px))} }
 .monster-emoji.shake-s { animation:mshake-s .3s; }
 .monster-emoji.shake-l { animation:mshake-l .45s; }
-.monster-emoji.hurt { filter:drop-shadow(4px 8px 6px rgba(0,0,0,.4)) brightness(2.1) saturate(.7); }
+.monster-emoji.hurt { filter:drop-shadow(4px 8px 6px rgba(0,0,0,.4)) brightness(1.65) saturate(.75); }
 .monster-emoji.hurt-skill { filter:drop-shadow(0 0 24px rgba(255,200,60,.95)) drop-shadow(4px 8px 6px rgba(0,0,0,.4))
                              brightness(1.75) sepia(.75) saturate(2.6) hue-rotate(-12deg); }
 .monster-name { position:absolute; left:0; right:0; top:72px; text-align:center;
@@ -150,7 +152,7 @@ body { font-family:'DungGeunMo','Malgun Gothic',sans-serif; color:#f0f0f0;
              width:310px; background:#f0f0f0; padding:5px 5px 0 5px; }
 .mhp-bg { background:#141414; height:16px; overflow:hidden; }
 .mhp-fill { height:100%; background:#9632fa; transition:width .25s; }
-.mhp-label { text-align:center; font-size:12px; color:#141414; padding:3px 0 4px; }
+.mhp-label { text-align:center; font-size:13px; color:#141414; padding:3px 0 4px; }
 .battle-panel { position:absolute; left:250px; bottom:150px; width:750px; height:70px;
                 background:#2d2823; border-top:1px solid #dcd7c8;
                 display:flex; align-items:center; justify-content:center; gap:20px; z-index:6; }
