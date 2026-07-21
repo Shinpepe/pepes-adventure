@@ -68,7 +68,7 @@ function showMedalVictory(areaId, medal, bossName, nextOverride=null) {
   clearView(); BGM.play('medal');
   SFX.win();
   screenEl.innerHTML = `
-    <div class="bg-night bg-medal" style="position:absolute;inset:0"></div>
+    <div class="bg-night bg-festival" style="position:absolute;inset:0"></div>
     <div id="mv-sparks" style="position:absolute;inset:0;pointer-events:none"></div>
     <div style="position:absolute;left:0;right:0;top:110px;text-align:center">
       <div style="font-size:26px;font-weight:bold;color:gold;text-shadow:2px 2px 0 #000">보스 처치 기념 훈장 수여</div>
@@ -135,7 +135,7 @@ function showEndingCrawl() {
     return `<div class="${cls}" style="min-height:32px">${esc(txt)}</div>`;
   }).join('');
   screenEl.innerHTML = `
-    <div class="bg-night bg-festival" style="position:absolute;inset:0"></div>
+    <div class="bg-night" style="position:absolute;inset:0"></div>
     <div id="end-stars"></div>
     <div class="crawl-wrap">
       <div class="crawl-text" id="crawl" style="top:700px">${crawlHTML}</div>
