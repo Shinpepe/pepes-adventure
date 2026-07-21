@@ -313,21 +313,20 @@ function showBattle(monster, areaId) {
     engine.checkTitles();
     engine.addLog(`승리! +${fmt(goldReward)}Gold / +${fmt(expReward)}EXP를 얻었습니다.`);
     panel.innerHTML = '';
-    /* 1) 사망 점멸 → 2) 그림자와 함께 소멸 → 3) 빈 자리에서 전리품 */
+    /* 1) 그림자와 함께 소멸 → 2) 빈 자리에서 전리품 */
     mEl.classList.remove('hurt','hurt-skill','shake-s','shake-l');
-    mEl.classList.add('dying');
     later(()=>{
       mEl.classList.add('dead');
       const sh = mainEl.querySelector('.monster-shadow');
       if (sh) sh.classList.add('gone');
-    }, 360);
+    }, 250);
     later(()=>{
       dropGold();
       SFX.coin();
       floatText('+'+fmt(goldReward)+'G', 'gold-t');
       setTimeout(()=>floatText('+'+fmt(expReward)+'EXP', 'exp-t'), 220);
       refreshSidebar();
-    }, 880);
+    }, 780);
 
     if (monster.boss === 1 && !s.bosses_defeated.includes(monster.name)) {
       s.bosses_defeated.push(monster.name);
@@ -335,15 +334,15 @@ function showBattle(monster, areaId) {
       const medal = MEDALS.find(m=>m.boss===monster.name);
       engine.addLog(`축하합니다! ${monster.name}을(를) 처치했습니다!`);
       if (monster.name === '사막의 지배자 파라오') {
-        later(()=>showDesertEvent(areaId, medal, monster.name), 2400);
+        later(()=>showDesertEvent(areaId, medal, monster.name), 2200);
       } else if (monster.name === '산의 지배자 가고일') {
-        later(()=>showMedalVictory(areaId, medal, monster.name, ()=>showEndingCrawl()), 2400);
+        later(()=>showMedalVictory(areaId, medal, monster.name, ()=>showEndingCrawl()), 2200);
       } else {
-        later(()=>showMedalVictory(areaId, medal, monster.name), 2400);
+        later(()=>showMedalVictory(areaId, medal, monster.name), 2200);
       }
       return;
     }
-    later(()=>showExplore(areaId), 2400);
+    later(()=>showExplore(areaId), 2200);
   }
 
   mainButtons();
