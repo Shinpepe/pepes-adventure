@@ -183,7 +183,7 @@ function showBattle(monster, areaId) {
   function dropGold() {
     const g = document.createElement('img');
     g.src = ASSET_BASE + 'gold.png';
-    g.style.cssText = 'position:absolute;left:50%;top:365px;width:56px;height:56px;animation:goldDrop 1.3s ease-out forwards;pointer-events:none';
+    g.style.cssText = 'position:absolute;left:50%;top:352px;width:84px;height:84px;animation:goldDrop 1.3s ease-out forwards;pointer-events:none;filter:drop-shadow(3px 5px 4px rgba(0,0,0,.4))';
     g.onerror = ()=>g.remove();
     mainEl.appendChild(g);
     setTimeout(()=>{ g.style.transition='opacity .5s'; g.style.opacity='0'; setTimeout(()=>g.remove(),550); }, 1400);
