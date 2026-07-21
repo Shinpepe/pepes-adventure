@@ -143,8 +143,6 @@ body { font-family:'MaplestoryLight', 'DungGeunMo','Malgun Gothic',sans-serif; c
   80%{transform:translate(calc(-50% - 5px),calc(-50% + 3px))} }
 .monster-emoji.shake-s { animation:mshake-s .3s; }
 .monster-emoji.shake-l { animation:mshake-l .45s; }
-@keyframes mdieblink { 0%,44%,88%{filter:brightness(2.2) saturate(.45)} 22%,66%,100%{filter:brightness(1)} }
-.monster-emoji.dying { animation:mdieblink .36s steps(1,end); }
 .monster-emoji.dead { opacity:0; transform:translate(-50%,-44%);
                       transition:opacity .5s ease-in, transform .5s ease-in; }
 .monster-shadow.gone { opacity:0; transform:translate(-50%,-50%) scaleX(.35);
