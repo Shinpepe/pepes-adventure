@@ -101,14 +101,18 @@ function showDialogScene(opts) {
   screenEl.innerHTML = `
     <div class="${bgClass}" style="position:absolute;inset:0"></div>
     ${stars ? '<div id="dlg-stars"></div>' : ''}
-    ${cafe ? `<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;opacity:.92;filter:drop-shadow(8px 12px 10px rgba(0,0,0,.5))">${aimg(cafeImg,'☕',220,'',2.0)}</div>` : ''}
+    ${cafe ? `<div style="position:absolute;inset:0;background:#000"></div>
+      <div id="date-fb" style="position:absolute;inset:0;display:none;align-items:center;justify-content:center;font-size:200px">☕</div>
+      <img src="${ASSET_BASE}${cafeImg}" alt="" draggable="false"
+        style="position:absolute;left:150px;top:0;width:700px;height:700px;object-fit:cover"
+        onerror="document.getElementById('date-fb').style.display='flex';this.remove()">` : ''}
     ${bigEmoji ? `<div style="position:absolute;left:0;right:0;top:60px;text-align:center;filter:drop-shadow(0 0 30px rgba(0,0,0,.8))">${aimg(bigImg,`<span style="filter:brightness(0.25)">${bigEmoji}</span>`,230,'',1.35)}</div>` : ''}
-    <div class="dialog-box ${system?'system':''}" style="left:150px;right:150px;bottom:130px;height:200px">
+    <div class="dialog-box ${system?'system':''}" style="${cafe?'left:170px;right:170px;bottom:110px;height:100px':'left:150px;right:150px;bottom:130px;height:200px'}">
       <div class="speaker-tag" id="dlg-speaker" style="display:none"></div>
       <div id="dlg-text" style="white-space:pre-line"></div>
       <div class="blink-arrow" id="dlg-arrow" style="display:none">▼</div>
     </div>
-    <button class="btn" id="dlg-next" style="position:absolute;right:40px;bottom:60px;width:200px">다음 (ENTER)</button>
+    <button class="btn" id="dlg-next" style="position:absolute;${cafe?'right:170px;bottom:40px':'right:40px;bottom:60px'};width:200px">다음 (ENTER)</button>
     <div class="fade-overlay fade-in-anim" id="dlg-fade"></div>`;
   if (stars) spawnStars(document.getElementById('dlg-stars'), 90);
   later(()=>{ const f=document.getElementById('dlg-fade'); if(f) f.remove(); }, 1100);
@@ -117,7 +121,7 @@ function showDialogScene(opts) {
     const [speaker, text] = lines[li];
     const sp = document.getElementById('dlg-speaker');
     if (speaker) { sp.style.display='flex'; sp.textContent = speaker;
-      sp.style.color = system ? '' : (speaker==='페페' ? '#96d2ff' : '#ff6464'); }
+      sp.style.color = system ? '' : cafe ? '#ffd764' : (speaker==='페페' ? '#96d2ff' : '#ff6464'); }
     else sp.style.display='none';
     document.getElementById('dlg-arrow').style.display='none';
     ci = 0;

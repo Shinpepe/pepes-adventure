@@ -33,7 +33,7 @@ function chefMessage() {
 
 function showVillage(location='MAIN', npcMsg='') {
   clearView();
-  BGM.play(location==='CASINO' ? 'casino' : location==='REST_NPC' ? 'cafe' : location==='INN_NPC' ? 'rest' : 'game');
+  BGM.play(location==='CASINO' ? 'casino' : 'game');   /* 원작: rest/cafe는 데이트 전용, 시설은 전부 game_bgm */
   const s = engine.state;
   const entDone = s.bosses_defeated.includes('숲의 지배자 엔트');
   const gen = s.gender || '남성';
@@ -226,7 +226,7 @@ function doInnRest() {
 function showNpcDate(npcKey) {
   const gen = engine.state.gender || '남성';
   const lines = NPC_DATE_DIALOGUES[npcKey][gen];
-  showDialogScene({ lines, cafe:true, cafeImg:npcImg(npcKey,true), bgm:'cafe', bgClass:'bg-shop', onFinish: ()=>{
+  showDialogScene({ lines, cafe:true, cafeImg:npcImg(npcKey,true), bgm: engine.state.gender==='여성' ? 'rest' : 'cafe', bgClass:'bg-dark', onFinish: ()=>{
     const loc = { inn:'INN_NPC', shop:'SHOP_NPC', chef:'REST_NPC' }[npcKey];
     const msg = { inn:innMessage(), shop:shopMessage(), chef:chefMessage() }[npcKey];
     showVillage(loc, msg);

@@ -76,7 +76,7 @@ function showShop(mode, page=0) {
 }
 
 function showRestaurant(page=0) {
-  clearView(); BGM.play('cafe');
+  clearView(); BGM.play('game');   /* 원작 식당도 game_bgm */
   const s = engine.state;
   const perPage = 3;
   const totalPages = Math.ceil(FOODS.length/perPage);
