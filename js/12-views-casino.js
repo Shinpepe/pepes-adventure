@@ -552,7 +552,9 @@ function showEnhance() {
   clearView(); BGM.play('casino');
   const s = engine.state;
   const bestRaw = engine.getBestItem();
-  const weapon = ITEMS.some(i=>i.name===bestRaw) ? bestRaw : null;   /* 빈 인벤토리('비어 있음') 방어 */
+  const equipped = ITEMS.some(i=>i.name===bestRaw) ? bestRaw : null;   /* 빈 인벤토리('비어 있음') 방어 */
+  const ownedWeapons = ITEMS.filter(i=>s.inventory.includes(i.name)).map(i=>i.name);   /* 공격력 오름차순 */
+  let weapon = equipped;   /* 강화 대상 (기본: 장착중) — 목록에서 변경 가능 */
   const render = () => {
     const lv = weapon ? engine.enhLevel(weapon) : 0;
     const it = weapon ? ITEMS.find(i=>i.name===weapon) : null;
@@ -567,29 +569,46 @@ function showEnhance() {
       <div class="main-area"><div class="main-dim"></div>
         <div style="position:absolute;left:0;right:0;top:24px;text-align:center;font-size:26px;font-weight:bold">장비강화</div>
         <div class="enh-panel" id="enh-panel" style="position:absolute;left:175px;top:80px;width:400px;background:rgba(20,16,12,.92);border:2px solid #b48c50;padding:24px;text-align:center">
+          ${ownedWeapons.length >= 2 ? `
+            <div style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-bottom:16px">
+              ${ownedWeapons.map(n=>{
+                const wlv = engine.enhLevel(n);
+                const sel = n === weapon;
+                return `<button class="btn" data-w="${esc(n)}" style="width:auto;padding:4px 10px;font-size:11px;${sel?'border-color:#ffd76a;background:#332b14':''}">
+                  <span style="${wlv?`color:${ENH_COLORS[wlv]}`:''}">${esc(n)}${wlv?` +${wlv}`:''}</span>${n===equipped?' <span style="color:#96d2ff">●</span>':''}</button>`;
+              }).join('')}
+            </div>` : ''}
           ${weapon ? `
             <div class="enh-img" id="enh-img" style="display:inline-block">${aimg(it.img, it.emoji, 120, '', 1.2)}</div>
-            <div style="font-size:19px;margin-top:12px" id="enh-name">${enhTag(weapon)}</div>
-            <div style="font-size:13px;color:#c8c8c8;margin-top:10px">
+            <div style="font-size:19px;margin-top:26px" id="enh-name">${enhTag(weapon)}</div>
+            <div style="font-size:13px;color:#c8c8c8;margin-top:12px">
               공격력 ${fmt(it.dmg)} <span style="color:#96d2ff">+ 강화 ${fmt(per*lv)}</span></div>
-            <div style="border-top:1px solid #5a4632;margin:16px 0 12px"></div>
+            <div style="border-top:1px solid #5a4632;margin:20px 0 14px"></div>
             ${maxed
               ? `<div style="color:#ff5050;font-size:16px">최대 강화 단계입니다!</div>`
               : `<div style="font-size:13px;line-height:2.1">
                   다음 단계 : <span style="color:${ENH_COLORS[lv+1]}">+${lv+1}</span> (공격력 +${fmt(per)})<br>
                   성공 확률 : ${rate}% &nbsp;·&nbsp; 비용 : ${fmt(cost)} Gold<br>
-                  <span style="color:#b4a08c">${lv >= ENH_DROP_FROM ? '실패 시 강화 단계가 1 하락합니다' : '+1 도전은 실패해도 잃을 것이 없습니다'}</span></div>`}
+                  <span style="color:#b4a08c">${lv >= ENH_DROP_FROM ? '실패 시 강화 단계가 1 하락합니다' : ''}</span></div>`}
             <div style="margin-top:16px" id="enh-msg" style="min-height:22px"></div>`
           : `<div style="font-size:15px;line-height:2;padding:30px 0">강화할 무기가 없습니다.<br>
              <span style="color:#b4a08c">상점에서 무기를 구매한 뒤 찾아와 주세요.</span></div>`}
         </div>
-        <div style="position:absolute;left:0;right:0;bottom:34px;text-align:center">
-          ${weapon && !maxed ? `<button class="btn" style="width:220px" id="enh-go">강화하기 (${fmt(cost)} G)</button>` : ''}
-          <button class="btn" style="width:180px;margin-left:${weapon && !maxed?'14px':'0'}" id="enh-back">◀ 나가기 (ESC)</button>
+        <div style="position:absolute;left:175px;width:400px;bottom:34px;display:flex;justify-content:space-between">
+          ${weapon && !maxed
+            ? `<button class="btn" style="width:193px" id="enh-go">강화하기 (${fmt(cost)} G)</button>
+               <button class="btn" style="width:193px" id="enh-back">◀ 나가기 (ESC)</button>`
+            : `<button class="btn" style="width:400px" id="enh-back">◀ 나가기 (ESC)</button>`}
         </div>
       </div>`;
     bindBtn('enh-back', ()=>showVillage('CASINO'));
     if (weapon && !maxed) bindBtn('enh-go', tryEnhance);
+    screenEl.querySelectorAll('[data-w]').forEach(chip=>chip.addEventListener('click', ()=>{
+      if (busy) return;
+      SFX.click();
+      weapon = chip.dataset.w;
+      render();
+    }));
     refreshSidebar && 0;
   };
   let busy = false;

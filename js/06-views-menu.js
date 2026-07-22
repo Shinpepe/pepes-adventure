@@ -56,6 +56,26 @@ function alertModal(text, onClose) {
   wrap.querySelector('#modal-ok').addEventListener('click', close);
 }
 
+function confirmModal(text, onYes, yesLabel='확인', noLabel='취소') {
+  if (document.getElementById('modal-wrap')) return;
+  if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
+  const wrap = document.createElement('div');
+  wrap.id = 'modal-wrap';
+  wrap.style.cssText = 'position:absolute;inset:0;background:rgba(0,0,0,.7);z-index:70;display:flex;align-items:center;justify-content:center';
+  wrap.innerHTML = `<div style="background:#1e2328;border:2px solid #f0f0f0;padding:36px;max-width:560px;text-align:center">
+    <div style="font-size:15px;line-height:2;white-space:pre-line">${esc(text)}</div>
+    <div style="display:flex;gap:14px;justify-content:center;margin-top:24px">
+      <button class="btn" style="width:160px" id="modal-yes">${esc(yesLabel)}</button>
+      <button class="btn" style="width:160px" id="modal-no">${esc(noLabel)}</button>
+    </div></div>`;
+  screenEl.appendChild(wrap);
+  const prevKey = currentKeyHandler;
+  const close = yes => { SFX.click(); wrap.remove(); currentKeyHandler = prevKey; if (yes && onYes) onYes(); };
+  currentKeyHandler = e => { if (e.key==='Escape') close(false); };   /* Enter로 파괴적 행동 방지 */
+  wrap.querySelector('#modal-yes').addEventListener('click', ()=>close(true));
+  wrap.querySelector('#modal-no').addEventListener('click', ()=>close(false));
+}
+
 function showSetup() {
   clearView(); BGM.play('set');
   let gender = null;

@@ -59,20 +59,23 @@ function showShop(mode, page=0) {
           SFX.coin();
         } else engine.addLog('골드가 부족하여 구매할 수 없습니다.');
       } else {
+        const doSell = () => {
+          const price = Math.floor(it.price/2);
+          s.inventory.splice(s.inventory.indexOf(it.name),1);
+          if (s.enhance && !s.inventory.includes(it.name)) delete s.enhance[it.name];   /* 판매 시 강화 기록 정리 */
+          s.gold += price;
+          engine.addLog(`${it.name}을(를) ${fmt(price)} Gold에 판매했습니다.`);
+          SFX.coin();
+          engine.checkTitles();
+          showShop(mode, page);
+        };
         const enh = engine.enhLevel(it.name);
-        if (enh > 0 && btn.dataset.armed !== '1') {
-          btn.dataset.armed = '1';
-          engine.addLog(`[${it.name} +${enh}] 강화된 무기입니다! 판매하면 강화 수치가 사라집니다.`);
-          engine.addLog('정말 판매하려면 판매 버튼을 한 번 더 눌러주세요.');
+        if (enh > 0) {
+          confirmModal(`[${it.name} +${enh}]\n강화된 장비입니다.\n정말 판매하시겠습니까?`, doSell, '판매', '취소');
           return;
         }
-        const price = Math.floor(it.price/2);
-        s.inventory.splice(s.inventory.indexOf(it.name),1);
-        if (s.enhance && !s.inventory.includes(it.name)) delete s.enhance[it.name];   /* 판매 시 강화 기록 정리 */
-        s.gold += price;
-        engine.addLog(`${it.name}을(를) ${fmt(price)} Gold에 판매했습니다.`);
-        SFX.coin();
-        engine.checkTitles();
+        doSell();
+        return;
       }
       showShop(mode, page);
     });
