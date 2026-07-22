@@ -207,7 +207,7 @@ body { font-family:'MaplestoryLight', 'DungGeunMo','Malgun Gothic',sans-serif; c
 @keyframes fadein-black { from{opacity:1} to{opacity:0} }
 
 /* ---------- 칭호 팝업 ---------- */
-#popup-layer { position:absolute; right:20px; top:20px; z-index:60; pointer-events:none; }
+#popup-layer { position:absolute; right:20px; top:196px; z-index:60; pointer-events:none; }
 .title-popup { width:190px; background:rgba(30,25,20,.9); border:2px solid rgba(200,170,50,.9);
                padding:10px; text-align:center; margin-bottom:8px;
                animation:popup-slide 5s forwards; }
