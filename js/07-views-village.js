@@ -74,7 +74,7 @@ function showVillage(location='MAIN', npcMsg='') {
       <div class="main-dim" style="background:rgba(0,0,0,.51)"></div>
       <div class="section-label" style="position:absolute;left:0;right:0;top:58px;font-size:15px">훈장 보관함</div>
       ${cells}
-      <div class="sub-text" style="position:absolute;left:0;right:0;top:495px;font-size:14px;color:#f0f0f0">ESC를 눌러 닫기</div>`;
+      <div class="sub-text" style="position:absolute;left:0;right:0;top:495px;font-size:14px;color:#f0f0f0">화면을 누르거나 ESC로 닫기</div>`;
   } else {
     // NPC 하위 화면
     const conf = {
@@ -133,10 +133,15 @@ function showVillage(location='MAIN', npcMsg='') {
     <div class="bg-town" style="position:absolute;left:250px;top:0;width:750px;height:550px"></div>
     <div class="main-area">${mainHTML}</div>
     ${sidebarHTML()}${logHTML()}
+    ${location==='MAIN' ? `
+    <div style="position:absolute;left:20px;bottom:18px;width:210px;border-top:1px solid #3c424a;padding-top:14px;z-index:6">
+      <button class="btn" id="v-menu" style="width:210px">☰ 메뉴 (ESC)</button>
+    </div>` : ''}
     <div id="map-overlay" style="display:none"></div>`;
 
   // 바인딩
   if (location === 'MAIN') {
+    bindBtn('v-menu', ()=>showSystemMenu({ returnTo:()=>showVillage('MAIN') }));   /* ESC와 동일 경로 (모바일 대응) */
     bindBtn('v-go', ()=>showAreaSelect());
     bindBtn('v-medal', ()=>showVillage('MEDAL'));
     bindBtn('v-map', ()=>toggleMap());
@@ -147,6 +152,10 @@ function showVillage(location='MAIN', npcMsg='') {
       : showVillage('CONST_NPC', '숲에 몬스터들이 많아서\n\n공사에 사용할 나무가 부족하대요...\n\n완성되면 다시 방문해주세요!'));
     bindBtn('v-casino', ()=>showVillage('CASINO'));
   } else {
+    if (location === 'MEDAL') {   /* 터치 대응: 화면 아무 곳이나 눌러 닫기 (ESC/B는 기존 유지) */
+      const ma = screenEl.querySelector('.main-area');
+      if (ma) ma.addEventListener('click', ()=>{ SFX.click(); showVillage('MAIN'); });
+    }
     bindBtn('n-back', ()=>showVillage('MAIN'));
     bindBtn('n-buy', ()=>showShop('buy'));
     bindBtn('n-sell', ()=>showShop('sell'));
@@ -189,6 +198,7 @@ function toggleMap() {
   if (ov.style.display === 'none') {
     ov.style.display = 'block';
     ov.style.cssText += ';position:absolute;inset:0;background:rgba(0,0,0,.78);z-index:50';
+    ov.onclick = ()=>{ SFX.click(); toggleMap(); };   /* 터치 대응: 탭하면 닫기 (onclick 할당 → 중복 등록 방지) */
     const s = engine.state;
     const unlocked = a => a==='forest' || s.bosses_defeated.includes(AREA_UNLOCK_BOSS[a]);
     ov.innerHTML = `
@@ -206,9 +216,9 @@ function toggleMap() {
         </div>
         <div style="text-align:center;margin-top:20px;font-size:14px">모험가 마을 — 당신의 거점</div>
       </div>
-      <div style="position:absolute;left:625px;bottom:38px;transform:translateX(-50%);font-size:12px;color:#282828;text-shadow:0 0 4px rgba(255,255,255,.5)">ESC를 눌러 닫기</div>`;
+      <div style="position:absolute;left:625px;bottom:38px;transform:translateX(-50%);font-size:12px;color:#282828;text-shadow:0 0 4px rgba(255,255,255,.5)">화면을 누르거나 ESC로 닫기</div>`;
   } else {
-    ov.style.display = 'none'; ov.innerHTML = '';
+    ov.style.display = 'none'; ov.innerHTML = ''; ov.onclick = null;
   }
 }
 

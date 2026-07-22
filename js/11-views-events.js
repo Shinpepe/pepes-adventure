@@ -140,7 +140,8 @@ function showEndingCrawl() {
     <div class="crawl-wrap">
       <div class="crawl-text" id="crawl" style="top:700px">${crawlHTML}</div>
     </div>
-    <div class="sub-text" style="position:absolute;right:20px;bottom:14px">ENTER : 넘기기</div>`;
+    <div class="sub-text" style="position:absolute;right:20px;bottom:14px">ENTER · 화면 터치 : 넘기기</div>
+    <div id="end-tap" style="position:absolute;inset:0;z-index:8"></div>`;
   spawnStars(document.getElementById('end-stars'), 180);
 
   const crawl = document.getElementById('crawl');
@@ -182,5 +183,6 @@ function showEndingCrawl() {
     showSystemMsg();
   }
   currentKeyHandler = e => { if (e.key==='Enter') { SFX.click(); advance(); } };
+  document.getElementById('end-tap').addEventListener('click', ()=>{ SFX.click(); advance(); });   /* 터치 대응: ENTER와 동일 경로 */
 }
 
