@@ -568,16 +568,17 @@ function showEnhance() {
       <div class="bg-casino" style="position:absolute;left:250px;top:0;width:750px;height:550px"></div>
       <div class="main-area"><div class="main-dim"></div>
         <div style="position:absolute;left:0;right:0;top:24px;text-align:center;font-size:26px;font-weight:bold">장비강화</div>
-        <div class="enh-panel" id="enh-panel" style="position:absolute;left:175px;top:80px;width:400px;background:rgba(20,16,12,.92);border:2px solid #b48c50;padding:24px;text-align:center">
-          ${ownedWeapons.length >= 2 ? `
-            <div style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-bottom:16px">
-              ${ownedWeapons.map(n=>{
-                const wlv = engine.enhLevel(n);
-                const sel = n === weapon;
-                return `<button class="btn" data-w="${esc(n)}" style="width:auto;padding:4px 10px;font-size:11px;${sel?'border-color:#ffd76a;background:#332b14':''}">
-                  <span style="${wlv?`color:${ENH_COLORS[wlv]}`:''}">${esc(n)}${wlv?` +${wlv}`:''}</span>${n===equipped?' <span style="color:#96d2ff">●</span>':''}</button>`;
-              }).join('')}
-            </div>` : ''}
+        ${ownedWeapons.length >= 2 ? `
+          <div class="enh-list" style="position:absolute;left:12px;top:80px;width:151px;background:rgba(20,16,12,.92);border:2px solid #b48c50;padding:12px 10px">
+            <div style="text-align:center;font-size:13px;color:#e8c88c">보유 무기</div>
+            ${ownedWeapons.map(n=>{
+              const wlv = engine.enhLevel(n);
+              const sel = n === weapon;
+              return `<button class="btn" data-w="${esc(n)}" style="display:block;width:100%;margin-top:8px;padding:7px 4px;font-size:11px;${sel?'border-color:#ffd76a;background:#332b14':''}">
+                <span style="${wlv?`color:${ENH_COLORS[wlv]}`:''}">${esc(n)}${wlv?` +${wlv}`:''}</span>${n===equipped?' <span style="color:#96d2ff">●</span>':''}</button>`;
+            }).join('')}
+          </div>` : ''}
+        <div class="enh-panel" id="enh-panel" style="position:absolute;left:175px;top:80px;width:400px;height:378px;background:rgba(20,16,12,.92);border:2px solid #b48c50;padding:24px;text-align:center">
           ${weapon ? `
             <div class="enh-img" id="enh-img" style="display:inline-block">${aimg(it.img, it.emoji, 120, '', 1.2)}</div>
             <div style="font-size:19px;margin-top:26px" id="enh-name">${enhTag(weapon)}</div>
@@ -589,10 +590,10 @@ function showEnhance() {
               : `<div style="font-size:13px;line-height:2.1">
                   다음 단계 : <span style="color:${ENH_COLORS[lv+1]}">+${lv+1}</span> (공격력 +${fmt(per)})<br>
                   성공 확률 : ${rate}% &nbsp;·&nbsp; 비용 : ${fmt(cost)} Gold<br>
-                  <span style="color:#b4a08c">${lv >= ENH_DROP_FROM ? '실패 시 강화 단계가 1 하락합니다' : ''}</span></div>`}
+                  <span style="color:#b4a08c">${lv >= ENH_DROP_FROM ? '실패 시 강화 단계가 1 하락합니다' : '&nbsp;'}</span></div>`}
             <div style="margin-top:16px" id="enh-msg" style="min-height:22px"></div>`
-          : `<div style="font-size:15px;line-height:2;padding:30px 0">강화할 무기가 없습니다.<br>
-             <span style="color:#b4a08c">상점에서 무기를 구매한 뒤 찾아와 주세요.</span></div>`}
+          : `<div style="height:100%;display:flex;align-items:center;justify-content:center"><div style="font-size:15px;line-height:2">강화할 무기가 없습니다.<br>
+             <span style="color:#b4a08c">상점에서 무기를 구매한 뒤 찾아와 주세요.</span></div></div>`}
         </div>
         <div style="position:absolute;left:175px;width:400px;bottom:34px;display:flex;justify-content:space-between">
           ${weapon && !maxed
@@ -625,6 +626,7 @@ function showEnhance() {
     if (go) go.classList.add('disabled');
     const back = document.getElementById('enh-back');
     if (back) back.classList.add('disabled');
+    screenEl.querySelectorAll('[data-w]').forEach(c=>c.classList.add('disabled'));
     /* 두근두근 차징 연출 */
     const img = document.getElementById('enh-img');
     if (img) img.classList.add('charging');
