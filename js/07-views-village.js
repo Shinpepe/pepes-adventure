@@ -214,14 +214,18 @@ function toggleMap() {
 
 function doInnRest() {
   const s = engine.state;
+  if (document.getElementById('inn-resting')) return;   /* 연타 방지: 휴식 연출 중 재실행 차단 */
   if (s.gold < 20) { engine.addLog('골드가 부족합니다!'); return; }
   s.gold -= 20;
   engine.updateInnAffinity();
   engine.addLog('20골드를 지불하고 여관에서 휴식을 취합니다...');
   refreshSidebar();
+  const prevKey = currentKeyHandler;
+  currentKeyHandler = null;   /* 휴식 연출 중 ESC 등 입력 잠금 (골드만 내고 이탈 방지) */
   const f = document.createElement('div');
+  f.id = 'inn-resting';
   f.className = 'fade-overlay';
-  f.style.cssText += ';opacity:0;transition:opacity 1.4s;display:flex;align-items:center;justify-content:center;font-size:20px;color:#fff';
+  f.style.cssText += ';opacity:0;transition:opacity 1.4s;display:flex;align-items:center;justify-content:center;font-size:20px;color:#fff;pointer-events:auto';   /* 연출 중 클릭 차단 */
   f.textContent = 'zZ 휴식 중...';
   screenEl.appendChild(f);
   requestAnimationFrame(()=>f.style.opacity='1');
@@ -229,6 +233,8 @@ function doInnRest() {
     s.hp = s.max_hp;
     engine.addLog('HP가 모두 회복되었습니다!');
     refreshSidebar();
+    currentKeyHandler = prevKey;   /* 회복 완료 후 입력 복구 */
+    f.removeAttribute('id'); f.style.pointerEvents = 'none';   /* 페이드아웃 중엔 즉시 조작 가능 */
     f.textContent = '';
     f.style.opacity = '0';
     later(()=>f.remove(), 1500);

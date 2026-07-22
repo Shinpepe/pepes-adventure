@@ -610,7 +610,6 @@ function showEnhance() {
       weapon = chip.dataset.w;
       render();
     }));
-    refreshSidebar && 0;
   };
   let busy = false;
   function tryEnhance() {
@@ -651,7 +650,6 @@ function showEnhance() {
           ? `강화 실패... [${weapon} +${lv} → +${lv-1}]`
           : `강화 실패... 단계는 유지되었다. [+${lv}]`);
       }
-      engine.save && 0;
       refreshSidebar();
       later(()=>{ busy = false; render(); }, 900);
     }, 1000);

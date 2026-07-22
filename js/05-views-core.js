@@ -78,6 +78,7 @@ function sidebarHTML() {
 function classifyLog(l) {
   if (l.startsWith('---') || l.startsWith('SYSTEM') || l.startsWith('[SYSTEM')) return 'lg-sys';
   if (/(레벨업|칭호|배웠|해금|개방|훈장|격파)/.test(l)) return 'lg-lvl';
+  if (l.includes('강화 성공')) return 'lg-gain';   /* '방어에 성공' 등 일반 성공은 제외, 정확 매칭 */
   if (/(피해|부족|실패|꽝|사망|쓰러졌|폴드|패배)/.test(l)) return 'lg-bad';
   if (/(Gold|골드|획득|당첨|승리|회복|증가)/.test(l)) return 'lg-gain';
   return '';
