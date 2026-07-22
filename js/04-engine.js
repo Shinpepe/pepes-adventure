@@ -17,7 +17,7 @@ const engine = {
         chef:{food_count:{},grade:'normal'}
       },
       unlocked_titles:['모험가'], equipped_title:'모험가',
-      gold_spent_slot:0, death_count:0, potions:0,
+      gold_spent_slot:0, death_count:0, potions:0, enhance:{},
       items_ever_owned:[], foods_ever_eaten:[],
       log:['--- 모험의 시작 ---','모험가의 마을에 오신 것을 환영합니다.','평화로운 마을에 도착했습니다.'],
       play_time:0
@@ -42,14 +42,21 @@ const engine = {
     }
     return out;
   },
+  enhLevel(name) { return (this.state.enhance||{})[name] || 0; },
+  enhBonusOf(name) {
+    const it = ITEMS.find(i=>i.name===name);
+    if (!it) return 0;
+    return Math.ceil(it.dmg * 0.12) * this.enhLevel(name);   /* 강화 1단계당 기본 공격력의 12% */
+  },
   getTotalAtk() {
     const s = this.state;
     const base = 10 + (s.level - 1) * 5;
-    let bonus = 0;
+    let bonus = 0, bestName = null;
     for (const n of s.inventory) {
       const it = ITEMS.find(i=>i.name===n);
-      if (it && it.dmg > bonus) bonus = it.dmg;
+      if (it && it.dmg > bonus) { bonus = it.dmg; bestName = n; }
     }
+    if (bestName) bonus += this.enhBonusOf(bestName);
     return { base, bonus, total: base + bonus };
   },
   getBestItem() {

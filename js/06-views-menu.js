@@ -39,13 +39,21 @@ function bindBtn(id, fn) {
   el.addEventListener('click', ()=>{ if (el.classList.contains('disabled')) return; SFX.click(); fn(); });
 }
 function alertModal(text, onClose) {
+  if (document.getElementById('modal-wrap')) return;   /* 중복 열림 방지 */
+  if (document.activeElement && document.activeElement.blur) document.activeElement.blur();   /* Enter/Space 재클릭 방지 */
   const wrap = document.createElement('div');
+  wrap.id = 'modal-wrap';
   wrap.style.cssText = 'position:absolute;inset:0;background:rgba(0,0,0,.7);z-index:70;display:flex;align-items:center;justify-content:center';
   wrap.innerHTML = `<div style="background:#1e2328;border:2px solid #f0f0f0;padding:36px;max-width:560px;text-align:center">
     <div style="font-size:15px;line-height:2;white-space:pre-line">${esc(text)}</div>
     <button class="btn" style="width:200px;margin-top:24px" id="modal-ok">확인</button></div>`;
   screenEl.appendChild(wrap);
-  wrap.querySelector('#modal-ok').addEventListener('click', ()=>{ SFX.click(); wrap.remove(); if (onClose) onClose(); });
+  const prevKey = currentKeyHandler;
+  const close = ()=>{ SFX.click(); wrap.remove(); currentKeyHandler = prevKey; if (onClose) onClose(); };
+  currentKeyHandler = e => {
+    if (e.key==='Escape' || e.key==='Enter' || e.key===' ') { e.preventDefault(); close(); }
+  };
+  wrap.querySelector('#modal-ok').addEventListener('click', close);
 }
 
 function showSetup() {

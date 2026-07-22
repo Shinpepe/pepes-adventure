@@ -22,6 +22,12 @@ function esc(str){ return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;')
 function fmt(n){ return Number(n).toLocaleString('ko-KR'); }
 
 /* ---------- 공통 프레임 (사이드바 + 로그) ---------- */
+const ENH_COLORS = ['', '#6ecc6e', '#5ca0e8', '#b45ce0', '#ffd700', '#ff5050'];
+function enhTag(name) {
+  const lv = engine.enhLevel(name);
+  if (!lv) return esc(name);
+  return `<span style="color:${ENH_COLORS[lv]}">${esc(name)} +${lv}</span>`;
+}
 function playerHitFx() {
   const v = document.createElement('div'); v.className = 'vignette-red';
   screenEl.appendChild(v); setTimeout(()=>v.remove(), 600);
@@ -45,7 +51,7 @@ function sidebarHTML() {
   const best = engine.getBestItem();
   let inv = '비어 있음';
   if (s.inventory.length) {
-    inv = s.inventory.map(n=>`<div>${esc(n)}${n===best?' (장착중)':''}</div>`).join('');
+    inv = s.inventory.map(n=>`<div>${enhTag(n)}${n===best?' (장착중)':''}</div>`).join('');
   }
   return `<div class="sidebar">
     <h2>${esc(s.player_name)||'&nbsp;'}</h2>

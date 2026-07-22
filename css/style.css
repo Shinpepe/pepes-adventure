@@ -2,12 +2,12 @@
 @font-face {
   /* 메이플스토리체를 assets/fonts/ 에 넣으면 자동 적용, 없으면 둥근모 폴백 */
   font-family: 'MaplestoryLight';
-  src: url('assets/fonts/Maplestory Light.ttf') format('truetype');
+  src: url('../assets/fonts/Maplestory Light.ttf') format('truetype');
   font-display: swap;
 }
 @font-face {
   font-family: 'DungGeunMo';
-  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2107@1.1/DungGeunMo.woff') format('woff');
+  src: url('https://cdn.jsdelivr.net/gh/neodgm/neodgm-webfont@latest/neodgm/neodgm.woff2') format('woff2');
   font-weight: normal; font-style: normal; font-display: swap;
 }
 * { margin:0; padding:0; box-sizing:border-box; user-select:none; }
@@ -343,3 +343,19 @@ body { font-family:'MaplestoryLight', 'DungGeunMo','Malgun Gothic',sans-serif; c
   75%{transform:translate(6px,4px)} 90%{transform:translate(-3px,2px)} }
 #battle-main.bshake { animation:bshake .55s; }
 @media (prefers-reduced-motion: reduce) { #battle-main.bshake { animation:none; } }
+
+/* ---------- 장비강화 ---------- */
+@keyframes enhcharge { 0%,100%{transform:translateX(0);filter:brightness(1)}
+  20%{transform:translateX(-4px)} 40%{transform:translateX(4px);filter:brightness(1.4)}
+  60%{transform:translateX(-3px)} 80%{transform:translateX(3px);filter:brightness(1.9)} }
+.enh-img.charging { animation:enhcharge .45s linear 2; }
+@keyframes enhburst { 0%{opacity:.95; transform:scale(.4)} 100%{opacity:0; transform:scale(1.8)} }
+.enh-burst { position:absolute; left:50%; top:50%; width:260px; height:260px; margin:-130px 0 0 -130px;
+  border-radius:50%; pointer-events:none; z-index:20;
+  background:radial-gradient(circle, rgba(255,225,120,.95) 0%, rgba(255,200,60,.4) 45%, transparent 70%);
+  animation:enhburst .7s ease-out forwards; }
+@keyframes enhfailshake { 0%,100%{transform:none} 20%{transform:translateX(-8px)}
+  45%{transform:translateX(8px)} 70%{transform:translateX(-5px)} 88%{transform:translateX(4px)} }
+.enh-panel.failshake { animation:enhfailshake .45s; }
+.enh-fail-flash { position:absolute; inset:0; pointer-events:none; z-index:19;
+  background:rgba(200,40,40,.3); animation:fadeout .6s forwards; }

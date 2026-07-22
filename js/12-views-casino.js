@@ -326,6 +326,7 @@ function showHoldem() {
   const s = engine.state;
   const BASE = 100, MIN_GOLD = 200;
   let deck, pHole, aHole, community, stage='betting', pot=0, pBet=0, aBet=0, curBet=0;
+  let pTotal = 0, pActs = 0, pRaises = 0;
   let revealed = 0, busy = false;
 
   screenEl.innerHTML = `
@@ -395,6 +396,7 @@ function showHoldem() {
     community = [deck.pop(), deck.pop(), deck.pop(), deck.pop(), deck.pop()];
     revealed = 0;
     pot = BASE*2; pBet = BASE; aBet = BASE; curBet = BASE;
+    pTotal = BASE;
     stage = 'action'; busy = false;
     engine.addLog(`텍사스 홀덤 시작! ${BASE}골드 블라인드`);
     msg(''); SFX.card();
@@ -411,22 +413,33 @@ function showHoldem() {
       return Math.min(1, str);
     }
     const score = evalBest(known);
-    return Math.min(1, score[0]/8 + score[1]/200);
+    /* 족보별 기준 강도 + 킥커 미세 보정. 미완성 스트리트는 발전 가능성 가산 */
+    const HAND_BASE = [0.14, 0.42, 0.58, 0.70, 0.80, 0.88, 0.93, 0.97, 1.0];
+    let st = HAND_BASE[Math.min(8, score[0])] + Math.min(0.05, (score[1]||0)/3000);
+    if (revealed < 5) st += 0.05;
+    return Math.min(1, st);
   }
   function aiRespond(afterRaise) {
-    const str = aiStrength() + (Math.random()*0.16 - 0.08);
+    const str = aiStrength() + (Math.random()*0.12 - 0.06);
     const toCall = curBet - aBet;
+    /* 플레이어 레이즈 빈도 — 공격적일수록 블러핑을 의심해 가볍게 콜 */
+    const aggr = pActs >= 3 ? pRaises / pActs : 0.35;
+    const potOdds = toCall > 0 ? toCall / (pot + toCall) : 0;
+    const need = potOdds + 0.14 - Math.min(0.14, aggr * 0.28);
+    const bluffCatch = Math.random() < (0.15 + Math.min(0.25, aggr * 0.4));
     later(()=>{
-      if (toCall > 0 && str < 0.16) { // AI 폴드
-        msg('상대가 폴드했습니다! POT 획득!', 'gold');
+      if (toCall > 0 && str < need && !bluffCatch) { // AI 폴드
+        msg(`상대가 폴드했습니다! +${fmt(pot - pTotal)}골드!`, 'gold');
         s.gold += pot;
-        engine.addLog(`상대가 폴드! +${fmt(pot - pBet)}골드를 얻었습니다.`);
+        engine.addLog(`상대가 폴드! +${fmt(pot - pTotal)}골드를 얻었습니다.`);
         SFX.win(); stage = 'result'; engine.checkTitles();
         refreshSidebar(); render(true);
         return;
       }
-      if (!afterRaise && str > 0.62 && Math.random() < 0.5) {
-        // AI 레이즈
+      const valueRaise = str > 0.62 && Math.random() < 0.55;
+      const bluffRaise = str < 0.30 && toCall === 0 && Math.random() < 0.14;
+      if (!afterRaise && (valueRaise || bluffRaise)) {
+        // AI 레이즈 (밸류/블러프)
         const raiseTotal = curBet + BASE;
         pot += raiseTotal - aBet;
         aBet = raiseTotal; curBet = raiseTotal;
@@ -453,10 +466,11 @@ function showHoldem() {
   }
   function playerCallCheck() {
     if (busy || stage!=='action') return;
+    pActs++;
     const callAmt = curBet - pBet;
     if (callAmt > 0) {
       if (s.gold < callAmt) { msg('골드가 부족합니다!', '#ff8c50'); return; }
-      s.gold -= callAmt; pot += callAmt; pBet = curBet;
+      s.gold -= callAmt; pot += callAmt; pBet = curBet; pTotal += callAmt;
       refreshSidebar();
       busy = true; render();
       nextStreet();  // 콜로 베팅 라운드 종료
@@ -467,10 +481,11 @@ function showHoldem() {
   }
   function playerRaise() {
     if (busy || stage!=='action') return;
+    pActs++; pRaises++;
     const raiseTotal = curBet + BASE;
     const cost = raiseTotal - pBet;
     if (s.gold < cost) { msg('골드가 부족합니다!', '#ff8c50'); return; }
-    s.gold -= cost; pot += cost;
+    s.gold -= cost; pot += cost; pTotal += cost;
     pBet = raiseTotal; curBet = raiseTotal;
     engine.addLog(`${fmt(BASE)}골드 레이즈!`);
     refreshSidebar();
@@ -479,8 +494,8 @@ function showHoldem() {
   }
   function playerFold() {
     if (busy || stage!=='action') return;
-    msg(`폴드... -${fmt(pBet)}골드`, '#ff6464');
-    engine.addLog(`폴드하였습니다. -${fmt(pBet)}골드를 잃었습니다.`);
+    msg(`폴드... -${fmt(pTotal)}골드`, '#ff6464');
+    engine.addLog(`폴드하였습니다. -${fmt(pTotal)}골드를 잃었습니다.`);
     SFX.lose();
     stage = 'result';
     render(true);
@@ -493,12 +508,12 @@ function showHoldem() {
     stage = 'result';
     if (cmp > 0) {
       s.gold += pot;
-      msg(`승리! [${HAND_NAMES[pScore[0]]}] +${fmt(pot-pBet)}골드!`, 'gold');
-      engine.addLog(`홀덤 승리! [${HAND_NAMES[pScore[0]]}] +${fmt(pot-pBet)}골드를 얻었습니다.`);
+      msg(`승리! [${HAND_NAMES[pScore[0]]}] +${fmt(pot-pTotal)}골드!`, 'gold');
+      engine.addLog(`홀덤 승리! [${HAND_NAMES[pScore[0]]}] +${fmt(pot-pTotal)}골드를 얻었습니다.`);
       SFX.win();
     } else if (cmp < 0) {
-      msg(`패배... 상대 [${HAND_NAMES[aScore[0]]}] -${fmt(pBet)}골드`, '#ff6464');
-      engine.addLog(`홀덤 패배... -${fmt(pBet)}골드를 잃었습니다.`);
+      msg(`패배... 상대 [${HAND_NAMES[aScore[0]]}] -${fmt(pTotal)}골드`, '#ff6464');
+      engine.addLog(`홀덤 패배... -${fmt(pTotal)}골드를 잃었습니다.`);
       SFX.lose();
     } else {
       s.gold += Math.floor(pot/2);
@@ -520,3 +535,106 @@ function showHoldem() {
   };
 }
 
+
+
+/* =====================================================================
+   장비강화 (도박장)
+   ===================================================================== */
+const ENH_MAX = 5;
+const ENH_RATES = [0.50, 0.40, 0.30, 0.20, 0.10];   /* +1 ~ +5 도전 성공률 */
+const ENH_DROP_FROM = 1;   /* 이 단계 이상에서 실패하면 하락 (= +2 도전부터. +1 도전 실패만 유지) */
+function enhCost(itemName) {
+  const it = ITEMS.find(i=>i.name===itemName);
+  const lv = engine.enhLevel(itemName);
+  return Math.max(100, Math.round(it.price * 0.01) * (lv + 1));   /* 확률이 벽, 비용은 가볍게 */
+}
+function showEnhance() {
+  clearView(); BGM.play('casino');
+  const s = engine.state;
+  const bestRaw = engine.getBestItem();
+  const weapon = ITEMS.some(i=>i.name===bestRaw) ? bestRaw : null;   /* 빈 인벤토리('비어 있음') 방어 */
+  const render = () => {
+    const lv = weapon ? engine.enhLevel(weapon) : 0;
+    const it = weapon ? ITEMS.find(i=>i.name===weapon) : null;
+    const per = it ? Math.ceil(it.dmg * 0.12) : 0;
+    const maxed = lv >= ENH_MAX;
+    const cost = (weapon && !maxed) ? enhCost(weapon) : 0;
+    const rate = (weapon && !maxed) ? Math.round(ENH_RATES[lv]*100) : 0;
+    screenEl.innerHTML = `
+      ${sidebarHTML()}
+      ${logHTML()}
+      <div class="bg-casino" style="position:absolute;left:250px;top:0;width:750px;height:550px"></div>
+      <div class="main-area"><div class="main-dim"></div>
+        <div style="position:absolute;left:0;right:0;top:24px;text-align:center;font-size:26px;font-weight:bold">장비강화</div>
+        <div class="enh-panel" id="enh-panel" style="position:absolute;left:175px;top:80px;width:400px;background:rgba(20,16,12,.92);border:2px solid #b48c50;padding:24px;text-align:center">
+          ${weapon ? `
+            <div class="enh-img" id="enh-img" style="display:inline-block">${aimg(it.img, it.emoji, 120, '', 1.2)}</div>
+            <div style="font-size:19px;margin-top:12px" id="enh-name">${enhTag(weapon)}</div>
+            <div style="font-size:13px;color:#c8c8c8;margin-top:10px">
+              공격력 ${fmt(it.dmg)} <span style="color:#96d2ff">+ 강화 ${fmt(per*lv)}</span></div>
+            <div style="border-top:1px solid #5a4632;margin:16px 0 12px"></div>
+            ${maxed
+              ? `<div style="color:#ff5050;font-size:16px">최대 강화 단계입니다!</div>`
+              : `<div style="font-size:13px;line-height:2.1">
+                  다음 단계 : <span style="color:${ENH_COLORS[lv+1]}">+${lv+1}</span> (공격력 +${fmt(per)})<br>
+                  성공 확률 : ${rate}% &nbsp;·&nbsp; 비용 : ${fmt(cost)} Gold<br>
+                  <span style="color:#b4a08c">${lv >= ENH_DROP_FROM ? '실패 시 강화 단계가 1 하락합니다' : '+1 도전은 실패해도 잃을 것이 없습니다'}</span></div>`}
+            <div style="margin-top:16px" id="enh-msg" style="min-height:22px"></div>`
+          : `<div style="font-size:15px;line-height:2;padding:30px 0">강화할 무기가 없습니다.<br>
+             <span style="color:#b4a08c">상점에서 무기를 구매한 뒤 찾아와 주세요.</span></div>`}
+        </div>
+        <div style="position:absolute;left:0;right:0;bottom:34px;text-align:center">
+          ${weapon && !maxed ? `<button class="btn" style="width:220px" id="enh-go">강화하기 (${fmt(cost)} G)</button>` : ''}
+          <button class="btn" style="width:180px;margin-left:${weapon && !maxed?'14px':'0'}" id="enh-back">◀ 나가기 (ESC)</button>
+        </div>
+      </div>`;
+    bindBtn('enh-back', ()=>showVillage('CASINO'));
+    if (weapon && !maxed) bindBtn('enh-go', tryEnhance);
+    refreshSidebar && 0;
+  };
+  let busy = false;
+  function tryEnhance() {
+    if (busy) return;
+    const lv = engine.enhLevel(weapon);
+    if (lv >= ENH_MAX) return;
+    const cost = enhCost(weapon);
+    if (s.gold < cost) { engine.addLog('골드가 부족합니다.'); return; }
+    busy = true;
+    s.gold -= cost;
+    refreshSidebar();
+    const go = document.getElementById('enh-go');
+    if (go) go.classList.add('disabled');
+    const back = document.getElementById('enh-back');
+    if (back) back.classList.add('disabled');
+    /* 두근두근 차징 연출 */
+    const img = document.getElementById('enh-img');
+    if (img) img.classList.add('charging');
+    SFX.tone && (SFX.tone(300,.1,'square',.06), SFX.tone(360,.1,'square',.06,.3), SFX.tone(430,.1,'square',.06,.6));
+    later(()=>{
+      const ok = Math.random() < ENH_RATES[lv];
+      const panel = document.getElementById('enh-panel');
+      if (ok) {
+        s.enhance[weapon] = lv + 1;
+        const burst = document.createElement('div'); burst.className = 'enh-burst';
+        panel.appendChild(burst); setTimeout(()=>burst.remove(), 750);
+        SFX.tone && (SFX.tone(660,.12,'square',.1), SFX.tone(880,.12,'square',.1,.1), SFX.tone(1320,.2,'square',.1,.2));
+        engine.addLog(`강화 성공! [${weapon} +${lv+1}]`);
+      } else {
+        const dropped = lv >= ENH_DROP_FROM;
+        if (dropped) s.enhance[weapon] = lv - 1;
+        const fl = document.createElement('div'); fl.className = 'enh-fail-flash';
+        panel.appendChild(fl); setTimeout(()=>fl.remove(), 650);
+        panel.classList.remove('failshake'); void panel.offsetWidth; panel.classList.add('failshake');
+        SFX.tone && (SFX.tone(220,.16,'sawtooth',.1), SFX.tone(140,.28,'sawtooth',.1,.13));
+        engine.addLog(dropped
+          ? `강화 실패... [${weapon} +${lv} → +${lv-1}]`
+          : `강화 실패... 단계는 유지되었다. [+${lv}]`);
+      }
+      engine.save && 0;
+      refreshSidebar();
+      later(()=>{ busy = false; render(); }, 900);
+    }, 1000);
+  }
+  render();
+  currentKeyHandler = e => { if (e.key==='Escape' && !busy) { SFX.click(); showVillage('CASINO'); } };
+}

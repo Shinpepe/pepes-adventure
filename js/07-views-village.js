@@ -104,6 +104,7 @@ function showVillage(location='MAIN', npcMsg='') {
         <button class="btn" style="width:150px" id="n-slot">슬롯머신</button>
         <button class="btn" style="width:150px" id="n-bj">블랙잭</button>
         <button class="btn" style="width:150px" id="n-holdem">텍사스 홀덤</button></div>
+        <button class="btn" style="width:320px;margin-top:14px" id="n-enhance">장비강화</button>
         <button class="btn" style="width:320px;margin-top:14px" id="n-back">◀ 도박장 나가기</button>`;
     }
     const dateKey = { INN_NPC:'inn', SHOP_NPC:'shop', REST_NPC:'chef' }[location];
@@ -162,6 +163,7 @@ function showVillage(location='MAIN', npcMsg='') {
     bindBtn('n-slot', ()=>showSlotMachine());
     bindBtn('n-bj', ()=>showBlackjack());
     bindBtn('n-holdem', ()=>showHoldem());
+    bindBtn('n-enhance', ()=>showEnhance());
     const dateKey = { INN_NPC:'inn', SHOP_NPC:'shop', REST_NPC:'chef' }[location];
     if (dateKey) bindBtn('n-date', ()=>showNpcDate(dateKey));
   }
