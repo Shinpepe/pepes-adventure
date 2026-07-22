@@ -154,6 +154,7 @@ function showBattle(monster, areaId) {
   let processing = false, victory = false, skillCd = 0, showingSkills = false;
   /* 보스 강공격 / 방어 / 물약 상태 */
   let defending = false, heavyCharged = false, mTurn = 0;
+  let nextWarn = 2 + Math.floor(Math.random()*4);   /* 첫 예고: 몬스터 2~5번째 행동 → 발동 3~6턴째 */
   let atkDownTurns = 0, frostTurns = 0, petrified = false;
   const BOSS_HEAVY = {
     '숲의 지배자 엔트':    { mult:2.2, warn:'엔트가 거대한 뿌리를 움직인다.',        banner:'⚠ 대지가 울리고 있다.',   fire:'지진으로 숲 전체가 흔들린다.',       extra:null },
@@ -247,11 +248,11 @@ function showBattle(monster, areaId) {
   function mainButtons() {
     showingSkills = false;
     panel.innerHTML = `
-      <button class="btn" style="width:138px" id="b-atk">공격 (Z)</button>
-      <button class="btn" style="width:138px" id="b-skill">스킬 (S)</button>
-      <button class="btn" style="width:138px" id="b-def">방어 (D)</button>
-      <button class="btn ${(s.potions||0)<1?'disabled':''}" style="width:138px" id="b-pot">물약 ${s.potions||0} (A)</button>
-      <button class="btn" style="width:138px" id="b-run">도망 (X)</button>`;
+      <button class="btn" style="width:128px" id="b-atk">공격 (Z)</button>
+      <button class="btn" style="width:128px" id="b-skill">스킬 (S)</button>
+      <button class="btn" style="width:128px" id="b-def">방어 (D)</button>
+      <button class="btn ${(s.potions||0)<1?'disabled':''}" style="width:128px" id="b-pot">물약 ${s.potions||0} (A)</button>
+      <button class="btn" style="width:128px" id="b-run">도망 (X)</button>`;
     bindBtn('b-atk', doAttack);
     bindBtn('b-skill', openSkills);
     bindBtn('b-def', doDefend);
@@ -360,11 +361,12 @@ function showBattle(monster, areaId) {
         else if (heavy.extra === 'frost') { frostTurns = 2; engine.addLog('동상 피해를 입었다.(2턴)'); }
       }
     }
-    /* --- 예고 턴 (3턴마다, 공격 대신 준비) --- */
-    else if (heavy && mTurn % 3 === 0) {
+    /* --- 예고 턴 (3~6턴 랜덤 주기, 공격 대신 준비) --- */
+    else if (heavy && mTurn >= nextWarn) {
       engine.addLog(heavy.warn);
       setWarnBanner(heavy.banner);
       heavyCharged = true;
+      nextWarn = mTurn + 3 + Math.floor(Math.random()*4);   /* 다음 예고까지 3~6행동 간격 */
     }
     /* --- 일반 공격 --- */
     else {
