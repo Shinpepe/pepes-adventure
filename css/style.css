@@ -152,7 +152,7 @@ body { font-family:'MaplestoryLight', 'DungGeunMo','Malgun Gothic',sans-serif; c
                              brightness(1.75) sepia(.75) saturate(2.6) hue-rotate(-12deg); }
 .monster-name { position:absolute; left:0; right:0; top:72px; text-align:center;
                  font-size:30px; font-weight:bold; color:#f08080; text-shadow:2px 2px 0 #000; }
-.mhp-wrap { position:absolute; left:50%; top:128px; transform:translateX(-50%);
+.mhp-wrap { position:absolute; left:220px; top:128px;   /* (750-310)/2 — transform 중앙정렬 제거로 서브픽셀 흔들림 방지 */
              width:310px; background:#f0f0f0; padding:5px 5px 0 5px; }
 .mhp-bg { background:#141414; height:16px; overflow:hidden; }
 .mhp-fill { height:100%; background:#9632fa; transition:width .25s; }
@@ -324,3 +324,22 @@ body { font-family:'MaplestoryLight', 'DungGeunMo','Malgun Gothic',sans-serif; c
   .go-vignette,.go-title,.go-info,.go-btnwrap { animation-duration:.01s; animation-delay:0s; }
   .go-ember { display:none; }
 }
+
+/* ---------- 보스 강공격 ---------- */
+.boss-warn { position:absolute; left:0; right:0; top:436px; text-align:center;
+  font-size:15px; color:#ffb45c; text-shadow:2px 2px 0 #000, 0 0 14px rgba(255,140,40,.45);
+  animation:warnpulse 1s ease-in-out infinite; z-index:8; }
+@keyframes warnpulse { 50%{opacity:.55} }
+.flash-white { position:absolute; inset:0; background:rgba(255,255,255,.9);
+  pointer-events:none; z-index:36; animation:fadeout .5s forwards; }
+.vignette-heavy { position:absolute; inset:0; pointer-events:none; z-index:30;
+  box-shadow: inset 0 0 150px 60px rgba(200,20,20,.75);
+  animation:fadeout .9s forwards; }
+.vignette-guard { position:absolute; inset:0; pointer-events:none; z-index:30;
+  box-shadow: inset 0 0 100px 36px rgba(70,140,230,.6);
+  animation:fadeout .7s forwards; }
+@keyframes bshake { 0%,100%{transform:none} 15%{transform:translate(-9px,5px)}
+  35%{transform:translate(9px,-5px)} 55%{transform:translate(-6px,-4px)}
+  75%{transform:translate(6px,4px)} 90%{transform:translate(-3px,2px)} }
+#battle-main.bshake { animation:bshake .55s; }
+@media (prefers-reduced-motion: reduce) { #battle-main.bshake { animation:none; } }
