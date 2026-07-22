@@ -10,8 +10,12 @@
   src: url('https://cdn.jsdelivr.net/gh/neodgm/neodgm-webfont@latest/neodgm/neodgm.woff2') format('woff2');
   font-weight: normal; font-style: normal; font-display: swap;
 }
-* { margin:0; padding:0; box-sizing:border-box; user-select:none; }
-html,body { width:100%; height:100%; background:#0b0d10; overflow:hidden; }
+* { margin:0; padding:0; box-sizing:border-box; user-select:none;
+    touch-action:manipulation;   /* 더블탭 줌 방지 (전투 연타 대응) — 스크롤 팬은 허용됨 */
+    -webkit-touch-callout:none;  /* iOS 길게 누르기 메뉴 방지 */
+    -webkit-tap-highlight-color:transparent; }
+html,body { width:100%; height:100%; background:#0b0d10; overflow:hidden;
+            overscroll-behavior:none; }   /* 당겨서 새로고침 방지 */
 body { font-family:'MaplestoryLight', 'DungGeunMo','Malgun Gothic',sans-serif; color:#f0f0f0;
        display:flex; align-items:center; justify-content:center; }
 
@@ -26,7 +30,9 @@ body { font-family:'MaplestoryLight', 'DungGeunMo','Malgun Gothic',sans-serif; c
   background:rgba(40,40,40,.82); border:1px solid #b4b4b4;
   padding:11px 8px; text-align:center; cursor:pointer; line-height:1.2;
 }
-.btn:hover:not(.disabled) { background:rgba(70,70,70,1); border-color:#fff; color:#fff; }
+@media (hover:hover) and (pointer:fine) {   /* 터치에서 hover 잔상 방지 — 마우스 환경만 적용 */
+  .btn:hover:not(.disabled) { background:rgba(70,70,70,1); border-color:#fff; color:#fff; }
+}
 .btn:active:not(.disabled) { background:rgba(20,20,20,1); color:#c8c8c8; transform:translateY(1px); }
 .btn.disabled { background:rgba(30,30,30,.4); border-color:#3c3c3c; color:#646464; cursor:default; }
 .btn.selected { background:rgba(25,70,75,1); }
