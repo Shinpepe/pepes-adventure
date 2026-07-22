@@ -63,6 +63,7 @@ function sidebarHTML() {
       <div class="sub">(기본 : ${fmt(atk.base)} + 장비 : ${fmt(atk.bonus)})</div>
       <div style="margin-top:8px" id="sb-gold-row">Gold : <span id="sb-gold-v">${fmt(s.gold)}</span></div>
       <div style="margin-top:8px">Kills : ${fmt(totalKills(s))}</div>
+      <div style="margin-top:8px">물약 : ${s.potions||0} / 5</div>
     </div>
     <div class="inv-title">인벤토리</div>
     <div class="inv-list">${inv}</div>

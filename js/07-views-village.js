@@ -91,6 +91,7 @@ function showVillage(location='MAIN', npcMsg='') {
         <button class="btn" style="width:320px;margin-top:14px" id="n-back">◀ 상점 나가기</button>`;
     } else if (location === 'INN_NPC') {
       buttons = `<button class="btn" style="width:320px" id="n-rest">zZ 휴식하기 (20 Gold)</button>
+        <button class="btn ${s.potions>=5?'disabled':''}" style="width:320px;margin-top:14px" id="n-potion">물약 구매 (150 Gold) [${s.potions||0}/5]</button>
         <button class="btn" style="width:320px;margin-top:14px" id="n-back">◀ 여관 나가기</button>`;
     } else if (location === 'REST_NPC') {
       buttons = `<button class="btn" style="width:320px" id="n-food">음식 구매하기</button>
@@ -149,6 +150,14 @@ function showVillage(location='MAIN', npcMsg='') {
     bindBtn('n-sell', ()=>showShop('sell'));
     bindBtn('n-food', ()=>showRestaurant());
     bindBtn('n-rest', ()=>doInnRest());
+    bindBtn('n-potion', ()=>{
+      if ((s.potions||0) >= 5) { engine.addLog('물약은 5개까지만 들고 다닐 수 있습니다.'); return; }
+      if (s.gold < 150) { engine.addLog('골드가 부족합니다.'); return; }
+      s.gold -= 150; s.potions = (s.potions||0) + 1;
+      SFX.coin();
+      engine.addLog(`물약을 구매했습니다. [${s.potions}/5]`, );
+      showVillage('INN_NPC', npcMsg);
+    });
     bindBtn('n-slot', ()=>showSlotMachine());
     bindBtn('n-bj', ()=>showBlackjack());
     bindBtn('n-holdem', ()=>showHoldem());

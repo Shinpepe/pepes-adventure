@@ -17,7 +17,7 @@ const engine = {
         chef:{food_count:{},grade:'normal'}
       },
       unlocked_titles:['모험가'], equipped_title:'모험가',
-      gold_spent_slot:0, death_count:0,
+      gold_spent_slot:0, death_count:0, potions:0,
       items_ever_owned:[], foods_ever_eaten:[],
       log:['--- 모험의 시작 ---','모험가의 마을에 오신 것을 환영합니다.','평화로운 마을에 도착했습니다.'],
       play_time:0

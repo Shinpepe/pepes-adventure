@@ -152,12 +152,23 @@ function showBattle(monster, areaId) {
   let mHp = monster.hp;
   const mMaxHp = monster.hp;
   let processing = false, victory = false, skillCd = 0, showingSkills = false;
+  /* 보스 강공격 / 방어 / 물약 상태 */
+  let defending = false, heavyCharged = false, mTurn = 0;
+  let atkDownTurns = 0, frostTurns = 0, petrified = false;
+  const BOSS_HEAVY = {
+    '숲의 지배자 엔트':    { mult:2.2, warn:'엔트가 거대한 뿌리를 움직인다.',        banner:'⚠ 대지가 울리고 있다.',   fire:'지진으로 숲 전체가 흔들린다.',       extra:null },
+    '사막의 지배자 파라오': { mult:1.7, warn:'파라오 주위로 모래가 소용돌이 친다.',   banner:'⚠ 모래폭풍이 몰려온다.', fire:'모래폭풍이 사막을 집어삼킨다.',     extra:'sand' },
+    '늪의 지배자 메두사':   { mult:1.5, warn:'메두사의 눈이 붉게 빛나기 시작한다.',   banner:'⚠ 눈을 마주치지 마라.',   fire:'메두사의 눈이 번쩍인다.',           extra:'petrify' },
+    '산의 지배자 가고일':   { mult:1.8, warn:'가고일이 날개를 펼치고 냉기를 뿜는다.', banner:'⚠ 주변이 얼어붙는다.',   fire:'눈보라가 산을 뒤덮는다.',           extra:'frost' },
+  };
+  const heavy = monster.boss === 1 ? BOSS_HEAVY[monster.name] : null;
   engine.addLog(`${monster.name}와(과) 전투 시작!`);
 
   screenEl.innerHTML = `
     <div class="main-area" id="battle-main">
       <div class="${area.bg}" style="position:absolute;inset:-14px"></div>
       <div class="main-dim"></div>
+      <div class="boss-warn" id="b-warn" style="display:none"></div>
       <div class="monster-name" id="b-name">${esc(monster.name)}</div>
       <div class="mhp-wrap">
         <div class="mhp-bg"><div class="mhp-fill" id="b-hpfill" style="width:100%"></div></div>
@@ -198,6 +209,30 @@ function showBattle(monster, areaId) {
     setTimeout(()=>d.remove(), 1200);
   }
   later(()=>mEl.classList.remove('enter'), 350);
+  function heavyHitFx() {
+    /* 강공격 무방비 피격: 흰 섬광 + 진한 비네트 + 화면 진동 */
+    const fw = document.createElement('div'); fw.className='flash-white';
+    screenEl.appendChild(fw); setTimeout(()=>fw.remove(), 520);
+    const vh = document.createElement('div'); vh.className='vignette-heavy';
+    screenEl.appendChild(vh); setTimeout(()=>vh.remove(), 950);
+    const bm = document.getElementById('battle-main');
+    if (bm) { bm.classList.remove('bshake'); void bm.offsetWidth; bm.classList.add('bshake'); }
+    const gw = document.querySelector('.sidebar .gauge-wrap');
+    if (gw) { gw.classList.remove('hit'); void gw.offsetWidth; gw.classList.add('hit'); }
+    SFX.hit(); SFX.tone && SFX.tone(70, .35, 'sawtooth', .14);
+  }
+  function guardFx() {
+    /* 방어 성공: 푸른 방패 비네트 */
+    const vg = document.createElement('div'); vg.className='vignette-guard';
+    screenEl.appendChild(vg); setTimeout(()=>vg.remove(), 750);
+    SFX.tone && (SFX.tone(420, .09, 'square', .1), SFX.tone(300, .14, 'square', .08, .07));
+  }
+  function setWarnBanner(text) {
+    const w = document.getElementById('b-warn');
+    if (!w) return;
+    if (text) { w.textContent = text; w.style.display = 'block'; }
+    else w.style.display = 'none';
+  }
   function shakeMonster(big) {
     mEl.classList.remove('shake-s','shake-l','hurt','hurt-skill'); void mEl.offsetWidth;
     mEl.classList.add(big?'shake-l':'shake-s');
@@ -212,12 +247,39 @@ function showBattle(monster, areaId) {
   function mainButtons() {
     showingSkills = false;
     panel.innerHTML = `
-      <button class="btn" style="width:160px" id="b-atk">공격하기 (Z)</button>
-      <button class="btn" style="width:160px" id="b-skill">스킬사용 (S)</button>
-      <button class="btn" style="width:160px" id="b-run">도망가기 (X)</button>`;
+      <button class="btn" style="width:138px" id="b-atk">공격 (Z)</button>
+      <button class="btn" style="width:138px" id="b-skill">스킬 (S)</button>
+      <button class="btn" style="width:138px" id="b-def">방어 (D)</button>
+      <button class="btn ${(s.potions||0)<1?'disabled':''}" style="width:138px" id="b-pot">물약 ${s.potions||0} (A)</button>
+      <button class="btn" style="width:138px" id="b-run">도망 (X)</button>`;
     bindBtn('b-atk', doAttack);
     bindBtn('b-skill', openSkills);
+    bindBtn('b-def', doDefend);
+    bindBtn('b-pot', doPotion);
     bindBtn('b-run', doRun);
+  }
+  function doDefend() {
+    if (processing || mHp<=0) return;
+    processing = true;
+    defending = true;
+    if (skillCd > 0) skillCd--;
+    engine.addLog('방어 태세를 취했다.');
+    SFX.click();
+    later(monsterAttack, 800);
+  }
+  function doPotion() {
+    if (processing || mHp<=0) return;
+    if ((s.potions||0) < 1) { engine.addLog('물약이 없습니다.'); return; }
+    if (s.hp >= s.max_hp) { engine.addLog('체력이 이미 가득 찼습니다.'); return; }
+    processing = true;
+    s.potions--;
+    const heal = Math.floor(s.max_hp * 0.2);
+    s.hp = Math.min(s.max_hp, s.hp + heal);
+    if (skillCd > 0) skillCd--;
+    engine.addLog(`물약을 마셨다. HP +${fmt(heal)} [남은 물약 ${s.potions}]`);
+    SFX.tone && (SFX.tone(392,.1,'triangle',.1), SFX.tone(523,.14,'triangle',.09,.08));
+    refreshSidebar();
+    later(monsterAttack, 800);
   }
   function skillButtons() {
     const skills = s.skills || [];
@@ -240,7 +302,8 @@ function showBattle(monster, areaId) {
     processing = true;
     SFX.attack();
     const atk = engine.getTotalAtk().total;
-    const dmg = Math.floor(atk*0.9 + Math.random()*(atk*0.2));
+    let dmg = Math.floor(atk*0.9 + Math.random()*(atk*0.2));
+    if (atkDownTurns > 0) dmg = Math.floor(dmg * 0.85);
     mHp -= dmg;
     updateMonsterHp();
     shakeMonster(false);
@@ -256,7 +319,8 @@ function showBattle(monster, areaId) {
     SFX.skill();
     const atk = engine.getTotalAtk().total;
     const mult = 2 + Math.random();
-    const dmg = Math.floor((atk*0.9 + Math.random()*(atk*0.2)) * mult);
+    let dmg = Math.floor((atk*0.9 + Math.random()*(atk*0.2)) * mult);
+    if (atkDownTurns > 0) dmg = Math.floor(dmg * 0.85);
     mHp -= dmg;
     skillCd = SKILL_COOLDOWN;
     updateMonsterHp();
@@ -272,13 +336,72 @@ function showBattle(monster, areaId) {
   }
   function monsterAttack() {
     if (victory) return;
-    const dmg = monster.min + Math.floor(Math.random()*(monster.max-monster.min+1));
-    s.hp -= dmg;
-    engine.addLog(`${fmt(dmg)} 피해를 입었습니다!`);
-    SFX.hit();
+    mTurn++;
+    if (atkDownTurns > 0) atkDownTurns--;   /* 모래폭풍 디버프는 내 행동 1회마다 감소 */
+
+    /* --- 강공격 발동 턴 --- */
+    if (heavy && heavyCharged) {
+      heavyCharged = false;
+      setWarnBanner(null);
+      let dmg = Math.floor(((monster.min+monster.max)/2) * heavy.mult * (0.95 + Math.random()*0.1));
+      engine.addLog(heavy.fire, );
+      if (defending) {
+        dmg = Math.floor(dmg * 0.4);
+        s.hp -= dmg;
+        engine.addLog('방어에 성공했다.');
+        engine.addLog(`${fmt(dmg)} 피해를 입었습니다!`);
+        guardFx();
+      } else {
+        s.hp -= dmg;
+        engine.addLog(`${fmt(dmg)} 피해를 입었습니다!`);
+        heavyHitFx();
+        if (heavy.extra === 'sand') { atkDownTurns = 2; engine.addLog('공격력이 떨어졌다.(2턴)'); }
+        else if (heavy.extra === 'petrify') { petrified = true; engine.addLog('몸이 굳어 움직일 수 없다.(1턴)'); }
+        else if (heavy.extra === 'frost') { frostTurns = 2; engine.addLog('동상 피해를 입었다.(2턴)'); }
+      }
+    }
+    /* --- 예고 턴 (3턴마다, 공격 대신 준비) --- */
+    else if (heavy && mTurn % 3 === 0) {
+      engine.addLog(heavy.warn);
+      setWarnBanner(heavy.banner);
+      heavyCharged = true;
+    }
+    /* --- 일반 공격 --- */
+    else {
+      let dmg = monster.min + Math.floor(Math.random()*(monster.max-monster.min+1));
+      if (defending) {
+        dmg = Math.floor(dmg * 0.4);
+        s.hp -= dmg;
+        engine.addLog('방어에 성공했다.');
+        engine.addLog(`${fmt(dmg)} 피해를 입었습니다!`);
+        guardFx();
+      } else {
+        s.hp -= dmg;
+        engine.addLog(`${fmt(dmg)} 피해를 입었습니다!`);
+        SFX.hit();
+        playerHitFx();
+      }
+    }
+    defending = false;
+
+    /* --- 동상 지속 피해 --- */
+    if (frostTurns > 0) {
+      frostTurns--;
+      const fd = Math.max(5, Math.floor(s.max_hp * 0.05));
+      s.hp -= fd;
+      engine.addLog(`동상으로 ${fmt(fd)} 피해를 입었다.`);
+    }
     refreshSidebar();
-    playerHitFx();
     if (s.hp <= 0) { later(()=>showGameOver(), 700); return; }
+
+    /* --- 석화: 다음 내 턴 스킵 --- */
+    if (petrified) {
+      petrified = false;
+      mainButtons();
+      panel.querySelectorAll('.btn').forEach(b=>b.classList.add('disabled'));
+      later(()=>{ if (!victory && s.hp > 0) monsterAttack(); }, 1300);
+      return;
+    }
     processing = false;
     mainButtons();
   }
@@ -359,6 +482,8 @@ function showBattle(monster, areaId) {
     }
     if (k==='z'||k==='Z'||k==='ㅋ') { doAttack(); }
     else if (k==='s'||k==='S'||k==='ㄴ') { SFX.click(); openSkills(); }
+    else if (k==='d'||k==='D'||k==='ㅇ') { doDefend(); }
+    else if (k==='a'||k==='A'||k==='ㅁ') { doPotion(); }
     else if (k==='x'||k==='X'||k==='ㅌ') { SFX.click(); doRun(); }
   };
 }
