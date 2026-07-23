@@ -85,7 +85,7 @@ function showChest(areaId) {
   screenEl.innerHTML = `
     <div class="main-area"><div class="${area.bg}" style="position:absolute;inset:-14px"></div><div class="main-dim"></div>
       <div class="monster-shadow"></div>
-      <div id="chest-icon" style="position:absolute;left:50%;top:170px;transform:translateX(-50%);font-size:140px;transition:opacity .35s;filter:drop-shadow(4px 8px 6px rgba(0,0,0,.4))">${aimg('monster/chest.webp','📦',140)}</div>
+      <div id="chest-icon" style="position:absolute;left:50%;top:275px;transform:translateX(-50%);font-size:140px;transition:opacity .35s;filter:drop-shadow(4px 8px 6px rgba(0,0,0,.4))">${aimg('monster/chest.webp','📦',140)}</div>
       <div id="chest-text" style="position:absolute;left:0;right:0;top:80px;text-align:center;font-size:20px;text-shadow:2px 2px 0 #000">수상한 상자를 발견했다.</div>
     </div>
     <div class="battle-panel">

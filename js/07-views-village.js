@@ -118,8 +118,8 @@ function showVillage(location='MAIN', npcMsg='') {
         <img src="${ASSET_BASE}${shadowFile}" alt="" style="position:absolute;left:52px;top:294px;width:266px;height:262px;object-fit:contain;filter:brightness(0)" onerror="this.remove()">` : '');
     const bubbleHTML = npcMsg ? `
         <div style="position:absolute;left:340px;top:405px;transform:translateY(-50%);width:350px;min-height:120px;background:rgba(50,40,30,.86);border:2px solid #b48c50;display:flex;align-items:center;justify-content:center;text-align:center;font-size:14px;line-height:1.55;white-space:pre-line;padding:12px 20px;box-sizing:border-box">${esc(npcMsg)}</div>
-        <div style="position:absolute;left:322px;top:390px;border:10px solid transparent;border-right:14px solid #b48c50"></div>
-        <div style="position:absolute;left:327px;top:392px;border:8px solid transparent;border-right:12px solid rgb(50,40,30)"></div>` : '';
+        <div style="position:absolute;left:318px;top:395px;border:10px solid transparent;border-right:14px solid #b48c50"></div>
+        <div style="position:absolute;left:323px;top:397px;border:8px solid transparent;border-right:12px solid rgb(50,40,30)"></div>` : '';
     mainHTML = `
       <div class="${conf.bg}" style="position:absolute;inset:0"></div>
       <div class="main-dim" style="background:rgba(0,0,0,.51)"></div>
