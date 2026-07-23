@@ -4,13 +4,13 @@
    도박장 — 슬롯머신
    ===================================================================== */
 const SLOT_SYMBOLS = [
-  { key:'lucky',      img:'slot/lucky.PNG',      reward:2000, weight:1 },
-  { key:'bar',        img:'slot/bar.PNG',        reward:900,  weight:2 },
-  { key:'bell',       img:'slot/bell.PNG',       reward:700,  weight:2 },
-  { key:'watermelon', img:'slot/watermelon.PNG', reward:500,  weight:3 },
-  { key:'orange',     img:'slot/orange.PNG',     reward:400,  weight:3 },
-  { key:'cherry',     img:'slot/cherry.PNG',     reward:200,  weight:5 },
-  { key:'coconut',    img:'slot/coconut.PNG',    reward:100,  weight:5 }
+  { key:'lucky',      img:'slot/lucky.webp',      reward:2000, weight:1 },
+  { key:'bar',        img:'slot/bar.webp',        reward:900,  weight:2 },
+  { key:'bell',       img:'slot/bell.webp',       reward:700,  weight:2 },
+  { key:'watermelon', img:'slot/watermelon.webp', reward:500,  weight:3 },
+  { key:'orange',     img:'slot/orange.webp',     reward:400,  weight:3 },
+  { key:'cherry',     img:'slot/cherry.webp',     reward:200,  weight:5 },
+  { key:'coconut',    img:'slot/coconut.webp',    reward:100,  weight:5 }
 ];
 function slotCellHTML(sym) {
   return `<img src="${ASSET_BASE}${sym.img}" alt="" style="width:80px;height:58px;object-fit:contain"

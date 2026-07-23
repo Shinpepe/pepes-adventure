@@ -3,6 +3,24 @@
 /* =====================================================================
    게임 엔진 (상태 / 저장 / 칭호)
    ===================================================================== */
+/* ---------- 세이브 호환용 재귀 병합 ----------
+   resetData()의 기본값 위에 저장값을 "중첩 객체까지" 덮어쓴다.
+   → 이후 버전에서 npc_affinity 등에 새 필드를 추가해도
+     옛 세이브를 불러올 때 기본값이 보존되어 크래시가 나지 않는다.
+   배열은 저장값을 통째로 사용한다(인벤토리·처치 목록 등은 병합 대상이 아님). */
+function deepMerge(base, saved) {
+  for (const k in saved) {
+    const sv = saved[k];
+    if (sv && typeof sv === 'object' && !Array.isArray(sv)
+        && base[k] && typeof base[k] === 'object' && !Array.isArray(base[k])) {
+      deepMerge(base[k], sv);
+    } else {
+      base[k] = sv;
+    }
+  }
+  return base;
+}
+
 const engine = {
   state: null,
   resetData() {
@@ -103,7 +121,7 @@ const engine = {
       const parsed = JSON.parse(raw);
       if (!parsed.data || !parsed.data.player_name) return 'corrupted';
       this.resetData();
-      this.state = Object.assign(this.state, parsed.data);
+      this.state = deepMerge(this.state, parsed.data);
       this.checkTitles();
       this.addLog(`슬롯 ${slot} 로드 완료!`);
       return 'ok';

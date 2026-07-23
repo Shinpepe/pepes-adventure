@@ -66,7 +66,7 @@ function showExplore(areaId) {
     showDialogScene({
       lines: BOSS_DIALOGUES[bossData.name] || [['', '강력한 존재가 나타났다...']],
       bgClass: area.bg, bigEmoji: bossData.emoji,
-      bigImg: bossData.img ? bossData.img.replace('.png','_shadow.PNG') : null, bgm:'battle',
+      bigImg: bossData.img ? bossData.img.replace('.webp','_shadow.webp') : null, bgm:'battle',
       onFinish: ()=>showBattle(bossData, areaId)
     });
   });
@@ -85,7 +85,7 @@ function showChest(areaId) {
   screenEl.innerHTML = `
     <div class="main-area"><div class="${area.bg}" style="position:absolute;inset:-14px"></div><div class="main-dim"></div>
       <div class="monster-shadow"></div>
-      <div id="chest-icon" style="position:absolute;left:50%;top:170px;transform:translateX(-50%);font-size:140px;transition:opacity .35s;filter:drop-shadow(4px 8px 6px rgba(0,0,0,.4))">${aimg('monster/chest.png','📦',140)}</div>
+      <div id="chest-icon" style="position:absolute;left:50%;top:170px;transform:translateX(-50%);font-size:140px;transition:opacity .35s;filter:drop-shadow(4px 8px 6px rgba(0,0,0,.4))">${aimg('monster/chest.webp','📦',140)}</div>
       <div id="chest-text" style="position:absolute;left:0;right:0;top:80px;text-align:center;font-size:20px;text-shadow:2px 2px 0 #000">수상한 상자를 발견했다.</div>
     </div>
     <div class="battle-panel">
@@ -102,7 +102,7 @@ function showChest(areaId) {
     later(()=>{
       if (Math.random() < 0.75) {
         // 미믹
-        icon.innerHTML = aimg('monster/mimic.png','👹',140); icon.style.opacity = '1';
+        icon.innerHTML = aimg('monster/mimic.webp','👹',140); icon.style.opacity = '1';
         engine.addLog('미믹을 발견하였습니다.');
         later(()=>{
           const dmg = Math.max(1, Math.floor(engine.state.max_hp * 0.1));
@@ -121,7 +121,7 @@ function showChest(areaId) {
         engine.state.gold += gold;
         engine.addLog(`보물을 발견하였습니다. +${fmt(gold)} Gold를 획득하였습니다.`);
         engine.checkTitles();
-        icon.innerHTML = aimg('monster/treasure.png','💰',140); icon.style.opacity = '1';
+        icon.innerHTML = aimg('monster/treasure.webp','💰',140); icon.style.opacity = '1';
         txt.textContent = `보물 발견! ${fmt(gold)} Gold 획득!`;
         txt.style.color = '#c8aa32';
         SFX.coin();
@@ -194,7 +194,7 @@ function showBattle(monster, areaId) {
   }
   function dropGold() {
     const g = document.createElement('img');
-    g.src = ASSET_BASE + 'gold.png';
+    g.src = ASSET_BASE + 'gold.webp';
     g.style.cssText = 'position:absolute;left:50%;top:352px;width:84px;height:84px;animation:goldDrop 1.3s ease-out forwards;pointer-events:none;filter:drop-shadow(3px 5px 4px rgba(0,0,0,.4))';
     g.onerror = ()=>g.remove();
     mainEl.appendChild(g);

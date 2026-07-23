@@ -23,7 +23,7 @@ function showStatueEvent(areaId, medal, bossName) {
     <div class="bg-event" style="position:absolute;left:250px;top:0;width:750px;height:550px"></div>
     <div class="main-area"><div class="main-dim"></div>
       <div class="glow-orb" style="left:50%;top:44%;transform:translate(-50%,-50%)"></div>
-      <div style="position:absolute;left:50%;top:44%;transform:translate(-50%,-50%);font-size:130px;filter:drop-shadow(4px 6px 6px rgba(0,0,0,.5))">${aimg('event_cat.png','🐈',130,'',1.7)}</div>
+      <div style="position:absolute;left:50%;top:44%;transform:translate(-50%,-50%);font-size:130px;filter:drop-shadow(4px 6px 6px rgba(0,0,0,.5))">${aimg('event_cat.webp','🐈',130,'',1.7)}</div>
       <div class="vcol" style="position:absolute;left:0;right:0;bottom:40px">
         <button class="btn" style="width:320px" id="se-go">조각상 아래에 무언가 있다 (ENTER)</button>
       </div>
@@ -40,7 +40,7 @@ function showSkillLearn(areaId, medal, bossName) {
     <div class="bg-event" style="position:absolute;left:250px;top:0;width:750px;height:550px"></div>
     <div class="main-area"><div class="main-dim"></div>
       <div class="glow-orb" style="left:50%;top:130px;transform:translateX(-50%)"></div>
-      <div style="position:absolute;left:50%;top:70px;transform:translateX(-50%);font-size:110px;filter:drop-shadow(4px 6px 6px rgba(0,0,0,.5))">${aimg('skill.png','📜',110,'',1.6)}</div>
+      <div style="position:absolute;left:50%;top:70px;transform:translateX(-50%);font-size:110px;filter:drop-shadow(4px 6px 6px rgba(0,0,0,.5))">${aimg('skill.webp','📜',110,'',1.6)}</div>
       <div class="vcol" style="position:absolute;left:0;right:0;bottom:30px;gap:10px">
         <div style="font-size:15px;text-shadow:1px 1px 0 #000">새로운 스킬을 배웠습니다. 스킬 이름을 정해주세요.</div>
         <div style="font-size:12px;color:#b4b4b4">(8글자 이내)</div>
@@ -74,7 +74,7 @@ function showMedalVictory(areaId, medal, bossName, nextOverride=null) {
       <div style="font-size:26px;font-weight:bold;color:gold;text-shadow:2px 2px 0 #000">보스 처치 기념 훈장 수여</div>
       <div style="font-size:16px;margin-top:18px">&lt;${esc(bossName)}&gt;을(를) 물리쳤습니다!</div>
       <div id="mv-medal" style="position:relative;height:210px;margin-top:34px;transform:scale(0);transition:transform 1.1s ease-out;
-           filter:drop-shadow(0 0 26px rgba(255,215,0,.6));animation:medalfloat 2.4s ease-in-out infinite 1.2s">${medal?`<img src="${ASSET_BASE}medal_shadow.png" alt="" style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:230px;height:222px" onerror="this.remove()">`+aimg(medal.img,medal.emoji,120,'position:absolute;left:50%;top:50%;transform:translate(-50%,-50%)',1.7):'🏅'}</div>
+           filter:drop-shadow(0 0 26px rgba(255,215,0,.6));animation:medalfloat 2.4s ease-in-out infinite 1.2s">${medal?`<img src="${ASSET_BASE}${medal.img}" alt="" style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:230px;height:222px;object-fit:contain;filter:brightness(0)" onerror="this.remove()">`+aimg(medal.img,medal.emoji,120,'position:absolute;left:50%;top:50%;transform:translate(-50%,-50%)',1.7):'🏅'}</div>
       <button class="btn" style="width:220px;margin-top:52px;opacity:0;transition:opacity .5s" id="mv-next">모험 계속하기 (ENTER)</button>
     </div>
     <style>@keyframes medalfloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}</style>`;

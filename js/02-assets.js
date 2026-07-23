@@ -32,18 +32,18 @@ function preloadImages() {
   /* 1순위: 마을 진입 직후 바로 보이는 것들 (NPC, 아이템, 훈장) */
   const first = [];
   ['npc_host','npc_merchant','npc_chef'].forEach(b=>['','_man'].forEach(g=>{
-    first.push(`${b}${g}.png`, `${b}${g}_shadow.png`);
+    first.push(`${b}${g}.webp`);
   }));
   ITEMS.forEach(i=>first.push(i.img));
   FOODS.forEach(f=>first.push(f.img));
   MEDALS.forEach(m=>first.push(m.img));
-  first.push('medal_shadow.png','medal_none.PNG','world_map.png');
+  first.push('medal_none.webp','world_map.webp');
   preloadList(first);
   /* 2순위: 전투·이벤트 관련 (1.2초 뒤) */
   setTimeout(()=>{
     const second = [];
-    MONSTERS.forEach(m=>{ second.push(m.img); if (m.boss) second.push(m.img.replace('.png','_shadow.PNG')); });
-    second.push('gold.png','event_cat.png','skill.png','monster/chest.png','monster/mimic.png','monster/treasure.png');
+    MONSTERS.forEach(m=>{ second.push(m.img); if (m.boss) second.push(m.img.replace('.webp','_shadow.webp')); });
+    second.push('gold.webp','event_cat.webp','skill.webp','monster/chest.webp','monster/mimic.webp','monster/treasure.webp');
     ['npc_host','npc_merchant','npc_chef'].forEach(b=>['','_man'].forEach(g=>second.push(`${b}${g}_date.png`)));
     SLOT_SYMBOLS.forEach(x=>second.push(x.img));
     preloadList(second);
@@ -57,14 +57,14 @@ if (typeof document !== 'undefined' && document.addEventListener) {
 
 /* ---- 배경 이미지: 파일이 존재하면 CSS 클래스에 덮어씀 ---- */
 const BG_ASSETS = {
-  'bg-town':'town_bg.png',      'bg-cross':'crossroads_bg.png',
-  'bg-forest':'forest_bg.png',  'bg-desert':'desert_bg.png',
-  'bg-swamp':'swamp_bg.png',    'bg-mountain':'mountain_bg.png',
-  'bg-casino':'casino_bg.png',  'bg-shop':'shop_bg.png',
-  'bg-inn':'inn_bg.png',        'bg-rest':'rest_bg.png',
-  'bg-const':'const_bg.png',    'bg-event':'event_bg.png',
-  'bg-set':'set_bg.png',        'bg-medal':'medal_bg.png',
-  'bg-festival':'village_festival.png'
+  'bg-town':'town_bg.webp',      'bg-cross':'crossroads_bg.webp',
+  'bg-forest':'forest_bg.webp',  'bg-desert':'desert_bg.webp',
+  'bg-swamp':'swamp_bg.webp',    'bg-mountain':'mountain_bg.webp',
+  'bg-casino':'casino_bg.webp',  'bg-shop':'shop_bg.webp',
+  'bg-inn':'inn_bg.webp',        'bg-rest':'rest_bg.webp',
+  'bg-const':'const_bg.webp',    'bg-event':'event_bg.webp',
+  'bg-set':'set_bg.webp',        'bg-medal':'medal_bg.webp',
+  'bg-festival':'village_festival.webp'
 };
 (function probeBackgrounds() {
   if (typeof Image === 'undefined' || typeof document === 'undefined' || !document.head) return;

@@ -13,49 +13,49 @@ const AREA_ORDER = ['forest','desert','swamp','mountain'];
 const AREA_UNLOCK_BOSS = { desert:'숲의 지배자 엔트', swamp:'사막의 지배자 파라오', mountain:'늪의 지배자 메두사' };
 
 const MONSTERS = [
-  { name:'슬라임', img:'monster/slime.png',   area:'forest', emoji:'🟢', hp:70,  min:4,  max:8,  gold:50,  exp:40,  boss:0 },
-  { name:'고블린', img:'monster/goblin.png',   area:'forest', emoji:'👺', hp:150, min:12, max:18, gold:90,  exp:70,  boss:0 },
-  { name:'오크', img:'monster/orc.png',     area:'forest', emoji:'👹', hp:320, min:22, max:30, gold:170, exp:130, boss:0 },
-  { name:'숲의 지배자 엔트', img:'monster/ent.png', area:'forest', emoji:'🌳', hp:1700, min:40, max:52, gold:1500, exp:1500, boss:1 },
+  { name:'슬라임', img:'monster/slime.webp',   area:'forest', emoji:'🟢', hp:70,  min:4,  max:8,  gold:50,  exp:40,  boss:0 },
+  { name:'고블린', img:'monster/goblin.webp',   area:'forest', emoji:'👺', hp:150, min:12, max:18, gold:90,  exp:70,  boss:0 },
+  { name:'오크', img:'monster/orc.webp',     area:'forest', emoji:'👹', hp:320, min:22, max:30, gold:170, exp:130, boss:0 },
+  { name:'숲의 지배자 엔트', img:'monster/ent.webp', area:'forest', emoji:'🌳', hp:1700, min:40, max:52, gold:1500, exp:1500, boss:1 },
 
-  { name:'사막 전갈', img:'monster/scorpion.png', area:'desert', emoji:'🦂', hp:450,  min:28, max:39,  gold:190, exp:150, boss:0 },
-  { name:'미이라', img:'monster/mummy.png',    area:'desert', emoji:'🧟', hp:800,  min:49, max:66,  gold:310, exp:290, boss:0 },
-  { name:'고대 석상', img:'monster/golem.png', area:'desert', emoji:'🗿', hp:1500, min:80, max:100, gold:530, exp:570, boss:0 },
-  { name:'사막의 지배자 파라오', img:'monster/pharaoh.png', area:'desert', emoji:'👑', hp:5000, min:195, max:250, gold:8500, exp:6000, boss:1 },
+  { name:'사막 전갈', img:'monster/scorpion.webp', area:'desert', emoji:'🦂', hp:450,  min:28, max:39,  gold:190, exp:150, boss:0 },
+  { name:'미이라', img:'monster/mummy.webp',    area:'desert', emoji:'🧟', hp:800,  min:49, max:66,  gold:310, exp:290, boss:0 },
+  { name:'고대 석상', img:'monster/golem.webp', area:'desert', emoji:'🗿', hp:1500, min:80, max:100, gold:530, exp:570, boss:0 },
+  { name:'사막의 지배자 파라오', img:'monster/pharaoh.webp', area:'desert', emoji:'👑', hp:5000, min:195, max:250, gold:8500, exp:6000, boss:1 },
 
-  { name:'독 개구리', img:'monster/frog.png', area:'swamp', emoji:'🐸', hp:1800, min:140, max:180, gold:560,  exp:600,  boss:0 },
-  { name:'늪지 악어', img:'monster/crocodile.png', area:'swamp', emoji:'🐊', hp:3400, min:190, max:240, gold:720,  exp:1100, boss:0 },
-  { name:'히드라', img:'monster/hydra.png',    area:'swamp', emoji:'🐉', hp:6000, min:250, max:310, gold:1230, exp:2000, boss:0 },
-  { name:'늪의 지배자 메두사', img:'monster/medusa.png', area:'swamp', emoji:'🐍', hp:15000, min:450, max:590, gold:12000, exp:13000, boss:1 },
+  { name:'독 개구리', img:'monster/frog.webp', area:'swamp', emoji:'🐸', hp:1800, min:140, max:180, gold:560,  exp:600,  boss:0 },
+  { name:'늪지 악어', img:'monster/crocodile.webp', area:'swamp', emoji:'🐊', hp:3400, min:190, max:240, gold:720,  exp:1100, boss:0 },
+  { name:'히드라', img:'monster/hydra.webp',    area:'swamp', emoji:'🐉', hp:6000, min:250, max:310, gold:1230, exp:2000, boss:0 },
+  { name:'늪의 지배자 메두사', img:'monster/medusa.webp', area:'swamp', emoji:'🐍', hp:15000, min:450, max:590, gold:12000, exp:13000, boss:1 },
 
-  { name:'얼음 정령', img:'monster/elemental.png', area:'mountain', emoji:'❄️', hp:6500,  min:280, max:360, gold:1280, exp:2100, boss:0 },
-  { name:'설원 늑대', img:'monster/wolf.png', area:'mountain', emoji:'🐺', hp:11000, min:370, max:450, gold:1690, exp:3300, boss:0 },
-  { name:'예티', img:'monster/yeti.png',      area:'mountain', emoji:'⛄', hp:17000, min:460, max:550, gold:2240, exp:5000, boss:0 },
-  { name:'산의 지배자 가고일', img:'monster/gargoyle.png', area:'mountain', emoji:'👿', hp:40000, min:900, max:1050, gold:80000, exp:27000, boss:1 }
+  { name:'얼음 정령', img:'monster/elemental.webp', area:'mountain', emoji:'❄️', hp:6500,  min:280, max:360, gold:1280, exp:2100, boss:0 },
+  { name:'설원 늑대', img:'monster/wolf.webp', area:'mountain', emoji:'🐺', hp:11000, min:370, max:450, gold:1690, exp:3300, boss:0 },
+  { name:'예티', img:'monster/yeti.webp',      area:'mountain', emoji:'⛄', hp:17000, min:460, max:550, gold:2240, exp:5000, boss:0 },
+  { name:'산의 지배자 가고일', img:'monster/gargoyle.webp', area:'mountain', emoji:'👿', hp:40000, min:900, max:1050, gold:80000, exp:27000, boss:1 }
 ];
 
 const ITEMS = [
-  { name:'낡은 목검', img:'item/wooden_sword.png',  emoji:'🪵', price:350,   dmg:10,   desc:'낡아서 곧 부러질 것 같은 검이다.' },
-  { name:'롱소드', img:'item/long_sword.png',     emoji:'🗡️', price:1800,  dmg:45,   desc:'잘 손질되어 있는 양날검이다.' },
-  { name:'전투 도끼', img:'item/battle_axe.png',  emoji:'🪓', price:6500,  dmg:140,  desc:'묵직해보이는 전투용 도끼이다.' },
-  { name:'강철 대검', img:'item/steel_sword.png',  emoji:'⚔️', price:18000, dmg:350,  desc:'철을 단련하여 제작된 대검이다.' },
-  { name:'기사의 창', img:'item/knight_spear.png',  emoji:'🔱', price:39000, dmg:700,  desc:'기사들이 사용하는 날카로운 창이다.' },
-  { name:'성검', img:'item/holy_sword.png',       emoji:'✨', price:90000, dmg:1500, desc:'보물로 여겨지는 성검이다.' }
+  { name:'낡은 목검', img:'item/wooden_sword.webp',  emoji:'🪵', price:350,   dmg:10,   desc:'낡아서 곧 부러질 것 같은 검이다.' },
+  { name:'롱소드', img:'item/long_sword.webp',     emoji:'🗡️', price:1800,  dmg:45,   desc:'잘 손질되어 있는 양날검이다.' },
+  { name:'전투 도끼', img:'item/battle_axe.webp',  emoji:'🪓', price:6500,  dmg:140,  desc:'묵직해보이는 전투용 도끼이다.' },
+  { name:'강철 대검', img:'item/steel_sword.webp',  emoji:'⚔️', price:18000, dmg:350,  desc:'철을 단련하여 제작된 대검이다.' },
+  { name:'기사의 창', img:'item/knight_spear.webp',  emoji:'🔱', price:39000, dmg:700,  desc:'기사들이 사용하는 날카로운 창이다.' },
+  { name:'성검', img:'item/holy_sword.webp',       emoji:'✨', price:90000, dmg:1500, desc:'보물로 여겨지는 성검이다.' }
 ];
 
 const FOODS = [
-  { name:'팬케이크', img:'item/pancake.png',       emoji:'🥞', price:600,   hp:30,   desc:'시럽이 가득 뿌려진 팬케이크이다.' },
-  { name:'모듬꼬치구이', img:'item/skewer.png',   emoji:'🍢', price:1450,  hp:75,   desc:'세 가지 종류의 꼬치구이이다.' },
-  { name:'고기스튜', img:'item/stew.png',       emoji:'🍲', price:3900,  hp:210,  desc:'자부심이 담긴 시그니처 스튜이다.' },
-  { name:'연어스테이크', img:'item/salmon.png',   emoji:'🐟', price:10000, hp:560,  desc:'은은한 허브향이 나는 연어구이이다.' },
-  { name:'소고기스테이크', img:'item/steak.png', emoji:'🥩', price:24000, hp:1400, desc:'다양한 가니쉬를 곁들인 스테이크이다.' }
+  { name:'팬케이크', img:'item/pancake.webp',       emoji:'🥞', price:600,   hp:30,   desc:'시럽이 가득 뿌려진 팬케이크이다.' },
+  { name:'모듬꼬치구이', img:'item/skewer.webp',   emoji:'🍢', price:1450,  hp:75,   desc:'세 가지 종류의 꼬치구이이다.' },
+  { name:'고기스튜', img:'item/stew.webp',       emoji:'🍲', price:3900,  hp:210,  desc:'자부심이 담긴 시그니처 스튜이다.' },
+  { name:'연어스테이크', img:'item/salmon.webp',   emoji:'🐟', price:10000, hp:560,  desc:'은은한 허브향이 나는 연어구이이다.' },
+  { name:'소고기스테이크', img:'item/steak.webp', emoji:'🥩', price:24000, hp:1400, desc:'다양한 가니쉬를 곁들인 스테이크이다.' }
 ];
 
 const MEDALS = [
-  { boss:'숲의 지배자 엔트',    img:'medal_forest.png',   emoji:'🥇', label:'숲의 훈장' },
-  { boss:'사막의 지배자 파라오',img:'medal_desert.png',   emoji:'🏅', label:'사막의 훈장' },
-  { boss:'늪의 지배자 메두사',  img:'medal_swamp.png',    emoji:'🎖️', label:'늪의 훈장' },
-  { boss:'산의 지배자 가고일',  img:'medal_mountain.png', emoji:'🏆', label:'산의 훈장' }
+  { boss:'숲의 지배자 엔트',    img:'medal_forest.webp',   emoji:'🥇', label:'숲의 훈장' },
+  { boss:'사막의 지배자 파라오',img:'medal_desert.webp',   emoji:'🏅', label:'사막의 훈장' },
+  { boss:'늪의 지배자 메두사',  img:'medal_swamp.webp',    emoji:'🎖️', label:'늪의 훈장' },
+  { boss:'산의 지배자 가고일',  img:'medal_mountain.webp', emoji:'🏆', label:'산의 훈장' }
 ];
 
 const BOSS_DIALOGUES = {

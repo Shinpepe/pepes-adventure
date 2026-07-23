@@ -9,7 +9,7 @@ function npcImg(key, date=false) {
   const base = { inn:'npc_host', shop:'npc_merchant', chef:'npc_chef' }[key];
   if (!base) return '';
   const man = engine.state.gender === '여성' ? '_man' : '';
-  return `${base}${man}${date?'_date':''}.png`;
+  return date ? `${base}${man}_date.png` : `${base}${man}.webp`;   /* 데이트 일러스트만 PNG 원본 유지 */
 }
 
 function innMessage() {
@@ -63,9 +63,9 @@ function showVillage(location='MAIN', npcMsg='') {
     const cells = MEDALS.map((m,i)=>{
       const won = defeated.includes(m.boss);
       const cx = [240,510,240,510][i], cy = [185,185,350,350][i];
-      const medalFile = won ? m.img : 'medal_none.PNG';
+      const medalFile = won ? m.img : 'medal_none.webp';
       return `
-        <img src="${ASSET_BASE}medal_shadow.png" alt="" style="position:absolute;left:${cx-65}px;top:${cy-62}px;width:130px;height:125px" onerror="this.remove()">
+        <img src="${ASSET_BASE}${medalFile}" alt="" style="position:absolute;left:${cx-65}px;top:${cy-62}px;width:130px;height:125px;object-fit:contain;filter:brightness(0)" onerror="this.remove()">
         <div style="position:absolute;left:${cx-55}px;top:${cy-55}px;width:110px;height:110px;display:flex;align-items:center;justify-content:center;${won?'':'filter:grayscale(1) brightness(.5)'}">${aimg(medalFile, won?m.emoji:'🏅', 88, '', 1.25)}</div>
         <div style="position:absolute;left:${cx-135}px;top:${cy+66}px;width:270px;text-align:center;font-size:11px;color:${won?'gold':'#646464'};text-shadow:1px 1px 0 #000">${won?esc(m.boss):'???'}</div>`;
     }).join('');
@@ -81,7 +81,7 @@ function showVillage(location='MAIN', npcMsg='') {
       SHOP_NPC:  { title:'장비 상점', npc:NPC_EMOJI.shop[gen], img:npcImg('shop'), bg:'bg-shop' },
       INN_NPC:   { title:'마을 여관', npc:NPC_EMOJI.inn[gen], img:npcImg('inn'), bg:'bg-inn' },
       REST_NPC:  { title:'마을 식당', npc:NPC_EMOJI.chef[gen], img:npcImg('chef'), bg:'bg-rest' },
-      CONST_NPC: { title:'공사 중...', npc:'', shadowOnly:npcImg('chef').replace('.png','_shadow.png'), bg:'bg-const' },
+      CONST_NPC: { title:'공사 중...', npc:'', shadowOnly:npcImg('chef'), bg:'bg-const' },   /* 본체 이미지를 brightness(0)로 실루엣 처리 */
       CASINO:    { title:'도박장', npc:'', bg:'bg-casino' }
     }[location];
     let buttons = '';
@@ -109,13 +109,13 @@ function showVillage(location='MAIN', npcMsg='') {
     }
     const dateKey = { INN_NPC:'inn', SHOP_NPC:'shop', REST_NPC:'chef' }[location];
     const showDate = dateKey && s.npc_affinity[dateKey].grade === 'best';
-    const shadowFile = conf.img ? conf.img.replace('.png','_shadow.png') : (conf.shadowOnly || '');
+    const shadowFile = conf.img || conf.shadowOnly || '';   /* 같은 이미지를 검정 필터로 그림자화 */
     const npcHTML = conf.img ? `
-        <img src="${ASSET_BASE}${shadowFile}" alt="" style="position:absolute;left:52px;top:294px;width:266px;height:262px;object-fit:contain" onerror="this.remove()">
+        <img src="${ASSET_BASE}${shadowFile}" alt="" style="position:absolute;left:52px;top:294px;width:266px;height:262px;object-fit:contain;filter:brightness(0)" onerror="this.remove()">
         <div style="position:absolute;left:60px;top:300px;width:250px;height:250px;font-size:130px;visibility:hidden;display:flex;align-items:center;justify-content:center" id="npc-fb">${conf.npc}</div>
         <img src="${ASSET_BASE}${conf.img}" alt="" style="position:absolute;left:60px;top:300px;width:250px;height:250px;object-fit:contain" onerror="document.getElementById('npc-fb').style.visibility='visible';this.remove()">`
       : (shadowFile ? `
-        <img src="${ASSET_BASE}${shadowFile}" alt="" style="position:absolute;left:52px;top:294px;width:266px;height:262px;object-fit:contain" onerror="this.remove()">` : '');
+        <img src="${ASSET_BASE}${shadowFile}" alt="" style="position:absolute;left:52px;top:294px;width:266px;height:262px;object-fit:contain;filter:brightness(0)" onerror="this.remove()">` : '');
     const bubbleHTML = npcMsg ? `
         <div style="position:absolute;left:340px;top:405px;transform:translateY(-50%);width:350px;min-height:120px;background:rgba(50,40,30,.86);border:2px solid #b48c50;display:flex;align-items:center;justify-content:center;text-align:center;font-size:14px;line-height:1.55;white-space:pre-line;padding:12px 20px;box-sizing:border-box">${esc(npcMsg)}</div>
         <div style="position:absolute;left:322px;top:390px;border:10px solid transparent;border-right:14px solid #b48c50"></div>
@@ -202,7 +202,7 @@ function toggleMap() {
     const s = engine.state;
     const unlocked = a => a==='forest' || s.bosses_defeated.includes(AREA_UNLOCK_BOSS[a]);
     ov.innerHTML = `
-      <img src="${ASSET_BASE}world_map.png" alt="" style="position:absolute;left:625px;top:350px;transform:translate(-50%,-50%);width:700px;height:700px;max-height:696px;object-fit:contain"
+      <img src="${ASSET_BASE}world_map.webp" alt="" style="position:absolute;left:625px;top:350px;transform:translate(-50%,-50%);width:700px;height:700px;max-height:696px;object-fit:contain"
         onerror="const f=document.getElementById('map-fallback'); if(f) f.style.display='block'; this.remove()">
       <div id="map-fallback" style="display:none;position:absolute;left:625px;top:350px;transform:translate(-50%,-50%);width:640px;height:560px;
                   background:linear-gradient(160deg,#d9c9a3,#c4b087);border:6px double #7a643c;padding:30px;color:#3c2f1e;box-sizing:border-box">
