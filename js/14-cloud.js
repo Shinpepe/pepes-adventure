@@ -59,6 +59,7 @@ const Cloud = {
     try {
       this.db.collection('rankings').doc(this.uid).set({
         name: state.player_name || '모험가',
+        title: state.equipped_title || '모험가',
         level: state.level || 1,
         gold: state.gold || 0,
         medals: (state.bosses_defeated || []).length,
@@ -224,23 +225,26 @@ function showHallOfFame() {
       : i===1 ? '<span style="color:#c0c8d0">2위</span>'
       : i===2 ? '<span style="color:#d09a6a">3위</span>'
       : `<span style="color:#7f8b99">${i+1}위</span>`;
-    let rows = `<div style="display:flex;gap:8px;padding:4px 10px;font-size:10px;color:#7f8b99;border-bottom:1px solid rgba(255,255,255,.1)">
-      <span style="width:38px">순위</span><span style="flex:1">이름</span><span style="width:56px">레벨</span>
-      <span style="width:64px;text-align:right">골드</span><span style="width:44px;text-align:center">훈장</span><span style="width:50px;text-align:right">시간</span></div>`;
-    snap.forEach((doc, idx) => {});
+    let rows = `<div class="hof-list"><div class="hof-head">
+      <span class="hof-rank">순위</span><span style="flex:1">모험가</span><span class="hof-lv">레벨</span>
+      <span class="hof-gold">골드</span><span class="hof-medal">훈장</span><span class="hof-time">시간</span></div>`;
     const list = []; snap.forEach(d => list.push({ id:d.id, ...d.data() }));
     list.forEach((r, i) => {
       const me = Cloud.uid && r.id === Cloud.uid;
-      rows += `<div style="display:flex;gap:8px;align-items:center;padding:6px 10px;border-radius:4px;
-        ${i%2?'background:rgba(255,255,255,.03);':''}${me?'background:rgba(140,233,154,.10);box-shadow:inset 0 0 0 1px rgba(140,233,154,.35);':''}">
-        <span style="width:38px;font-size:11px">${rankMark(i)}</span>
-        <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(r.name||'모험가')}${me?' <span style="font-size:9px;color:#8ce99a">(나)</span>':''}</span>
-        <span style="width:56px;color:#ffe9a8">Lv.${fmt(r.level||1)}</span>
-        <span style="width:64px;text-align:right;color:#ffd76a;font-size:12px">${fmtGold(r.gold||0)}</span>
-        <span style="width:44px;text-align:center;color:#8fd4ae">🏅${r.medals||0}</span>
-        <span style="width:50px;text-align:right;color:#9aa4b0;font-size:11px">${fmtTime(r.play_time||0)}</span>
+      const name = String(r.name || '모험가').slice(0, 8);   /* 이름 최대 8자 방어 */
+      rows += `<div class="hof-row ${me?'me':''}">
+        <span class="hof-rank">${rankMark(i)}</span>
+        <div class="hof-id">
+          <div class="hof-name">${esc(name)}${me?' <span class="me-tag">(나)</span>':''}</div>
+          ${r.title ? `<div class="hof-title">${esc(String(r.title).slice(0,12))}</div>` : ''}
+        </div>
+        <span class="hof-lv">Lv.${fmt(r.level||1)}</span>
+        <span class="hof-gold">${fmtGold(r.gold||0)}</span>
+        <span class="hof-medal">🏅${r.medals||0}</span>
+        <span class="hof-time">${fmtTime(r.play_time||0)}</span>
       </div>`;
     });
+    rows += `</div>`;
     b.innerHTML = rows;
   }).catch(() => fail('기록을 불러오지 못했습니다.<br>잠시 후 다시 시도해 주세요.'));
 }

@@ -631,3 +631,25 @@ body { font-family:'MaplestoryLight', 'DungGeunMo','Malgun Gothic',sans-serif; c
   radial-gradient(ellipse 42% 34% at 62.5% 26%, rgba(140,220,175,.10), transparent 72%),
   radial-gradient(ellipse 70% 60% at 62.5% 45%, rgba(255,255,255,.03), transparent 75%),
   linear-gradient(180deg,#17131f 0%, #100d16 55%, #0a080e 100%); }
+
+/* ---------- 명예의 전당 ---------- */
+.hof-list { width:100%; max-height:360px; overflow-y:auto; overflow-x:hidden;
+  scrollbar-width:thin; scrollbar-color:#3c3c46 transparent; padding-right:4px; }
+.hof-head, .hof-row { display:flex; gap:8px; align-items:center; padding:5px 10px; }
+.hof-head { font-size:10px; color:#7f8b99; border-bottom:1px solid rgba(255,255,255,.1);
+  position:sticky; top:0; background:#20252b; z-index:1; }
+.hof-row { border-radius:5px; min-height:40px; }
+.hof-row:nth-child(odd) { background:rgba(255,255,255,.03); }
+.hof-row.me { background:rgba(140,233,154,.10);
+  box-shadow:inset 0 0 0 1px rgba(140,233,154,.35); }
+.hof-rank { width:40px; font-size:11px; flex-shrink:0; }
+.hof-id { flex:1; min-width:0; display:flex; flex-direction:column; gap:2px; justify-content:center; }
+.hof-name { font-size:13px; color:#f0f0f0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.hof-name .me-tag { font-size:9px; color:#8ce99a; }
+.hof-title { width:fit-content; max-width:100%; font-size:9px; color:#ffe9a8;
+  border:1px solid rgba(201,162,77,.45); border-radius:20px; padding:1px 8px;
+  background:rgba(0,0,0,.3); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.hof-lv    { width:58px; color:#ffe9a8; flex-shrink:0; }
+.hof-gold  { width:64px; text-align:right; color:#ffd76a; font-size:12px; flex-shrink:0; }
+.hof-medal { width:42px; text-align:center; color:#8fd4ae; flex-shrink:0; }
+.hof-time  { width:48px; text-align:right; color:#9aa4b0; font-size:11px; flex-shrink:0; }
