@@ -15,11 +15,13 @@ function slotCardHTML(i) {
     const g = d.gold>=1e6 ? (d.gold/1e6).toFixed(1)+'M' : d.gold>=1000 ? Math.round(d.gold/1000)+'K' : fmt(d.gold);
     return `<button class="slot-card" id="slot-${i}">
       <span class="sc-no">SLOT ${i}</span>${timeStr?`<span class="sc-time">${timeStr} 저장</span>`:''}
+      <span class="sc-del" data-del="${i}" title="슬롯 삭제">×</span>
       <div class="sc-main">${esc(d.player_name)} &nbsp;Lv.${fmt(d.level)} &nbsp;· ${esc(d.equipped_title||'')}</div>
       <div class="sc-sub">플레이 ${hh}:${mm} &nbsp;· ${g} Gold &nbsp;· 물약 ${d.potions||0}</div></button>`;
   } catch(e) {
     return `<button class="slot-card empty" id="slot-${i}">
-      <span class="sc-no">SLOT ${i}</span><div class="sc-main">[ 데이터 오류 ]</div><div class="sc-sub">&nbsp;</div></button>`;
+      <span class="sc-no">SLOT ${i}</span><span class="sc-del" data-del="${i}" title="슬롯 삭제">×</span>
+      <div class="sc-main">[ 데이터 오류 ]</div><div class="sc-sub">&nbsp;</div></button>`;
   }
 }
 /* [분할 09] 시스템 메뉴/칭호 도감/게임오버 */
@@ -37,11 +39,11 @@ function showSystemMenu(opts={}) {
   if (mode === 'MAIN') {
     body = `<div class="sys-head">SYSTEM MENU</div>
       <button class="btn" style="width:250px" id="m-resume">▶ 계속하기</button>
-      <button class="btn" style="width:250px" id="m-sound">사운드 설정</button>
-      <button class="btn" style="width:250px" id="m-titles">칭호 도감</button>
-      <button class="btn" style="width:250px" id="m-new">새 게임 시작</button>
       <button class="btn" style="width:250px" id="m-save">게임 저장하기</button>
       <button class="btn" style="width:250px" id="m-load">게임 불러오기</button>
+      <button class="btn" style="width:250px" id="m-titles">칭호 도감</button>
+      <button class="btn" style="width:250px" id="m-sound">사운드 설정</button>
+      <button class="btn" style="width:250px" id="m-new">새 게임 시작</button>
       <button class="btn" style="width:250px" id="m-exit">타이틀로 돌아가기</button>`;
   } else if (mode === 'SOUND') {
     body = `<div class="sys-head">사운드 설정</div>
@@ -81,6 +83,18 @@ function showSystemMenu(opts={}) {
     ${msg?`<div class="msg-cyan" style="position:absolute;left:0;right:0;top:80px">${esc(msg)}</div>`:''}
     <div class="vcol sys-panel" style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%)">${body}</div>`;
 
+  screenEl.querySelectorAll('[data-del]').forEach(el=>{
+    el.addEventListener('click', (e)=>{
+      e.stopPropagation();   /* 슬롯 저장/불러오기 클릭과 분리 */
+      SFX.click();
+      const i = Number(el.dataset.del);
+      confirmModal(`슬롯 ${i}의 저장 데이터를 삭제하시겠습니까?\n삭제한 데이터는 복구할 수 없습니다.`, ()=>{
+        store.del('pepe_save_'+i);   /* 클라우드 로그인 시 서버에도 반영됨 */
+        engine.addLog(`슬롯 ${i}의 저장 데이터를 삭제했습니다.`);
+        showSystemMenu({...opts, message:''});
+      }, '삭제', '취소');
+    });
+  });
   bindBtn('m-resume', returnTo);
   bindBtn('m-sound', ()=>showSystemMenu({...opts, mode:'SOUND', message:''}));
   bindBtn('m-titles', ()=>showTitleBook(opts));

@@ -565,7 +565,7 @@ body { font-family:'MaplestoryLight', 'DungGeunMo','Malgun Gothic',sans-serif; c
 .sys-head { font-size:22px; font-weight:bold; letter-spacing:1px; text-align:center;
   border-bottom:1px solid rgba(255,255,255,.12); padding-bottom:12px; width:100%;
   margin-bottom:4px; }
-.slot-card { width:400px; text-align:left; padding:10px 16px; border-radius:6px;
+.slot-card { width:400px; text-align:left; padding:10px 42px 10px 16px; border-radius:6px;
   background:linear-gradient(180deg,#444851,#33373e 55%,#2a2e34);
   border:1px solid #b4b4b4; cursor:pointer; position:relative; color:#f0f0f0;
   font-family:inherit; font-size:14px; line-height:1.4;
@@ -662,3 +662,12 @@ body { font-family:'MaplestoryLight', 'DungGeunMo','Malgun Gothic',sans-serif; c
 .tb-btn.selected .tb-hint { color:#a8dde2; }
 .tb-btn[data-un="0"] .tb-name { color:#8a94a0; }
 .tb-btn[data-un="0"] .tb-hint { color:#6a7480; }
+
+/* ---------- 저장 슬롯 삭제 버튼 ---------- */
+.sc-del { position:absolute; right:12px; top:50%; transform:translateY(-50%);
+  width:20px; height:20px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+  font-size:12px; color:#8a94a0; background:rgba(0,0,0,.35); border:1px solid #4a515a;
+  cursor:pointer; transition:color .12s, border-color .12s, background .12s; }
+@media (hover:hover) and (pointer:fine) {
+  .sc-del:hover { color:#ff8c8c; border-color:#ff8c8c; background:rgba(120,20,20,.3); }
+}

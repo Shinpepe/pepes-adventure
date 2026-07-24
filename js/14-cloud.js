@@ -108,7 +108,7 @@ function showLoginScreen() {
   let done = false;
   const finish = (user) => { if (done) return; done = true; try { off(); } catch (e) {} renderLoginForm(user, false); };
   const off = firebase.auth().onAuthStateChanged(u => finish(u));
-  later(() => finish(null), 2500);   /* 네트워크 지연 대비 */
+  later(() => finish(null), 4000);   /* 네트워크 지연 대비 (느린 회선에서 세션 복원 대기) */
 }
 
 function renderLoginForm(savedUser, offline) {
@@ -184,7 +184,12 @@ function renderLoginForm(savedUser, offline) {
   if (!offline) {
     bindBtn('lg-login', () => submit('login'));
     bindBtn('lg-signup', () => submit('signup'));
+    const idEl = document.getElementById('lg-id');
     const pwEl = document.getElementById('lg-pw');
+    if (idEl) {
+      idEl.focus();   /* 진입 즉시 아이디 입력 가능 */
+      idEl.addEventListener('keydown', e => { if (e.key === 'Enter' && pwEl) pwEl.focus(); });
+    }
     if (pwEl) pwEl.addEventListener('keydown', e => { if (e.key === 'Enter') submit('login'); });
   }
   bindBtn('lg-guest', () => { SFX.click(); Cloud.logout(); showTitleScreen(); });
