@@ -32,6 +32,7 @@ function chefMessage() {
 }
 
 function showVillage(location='MAIN', npcMsg='') {
+  TIME_ACTIVE = true;   /* 게임 화면 — 플레이타임 진행 */
   clearView();
   BGM.play(location==='CASINO' ? 'casino' : 'game');   /* 원작: rest/cafe는 데이트 전용, 시설은 전부 game_bgm */
   const s = engine.state;
@@ -42,7 +43,6 @@ function showVillage(location='MAIN', npcMsg='') {
   if (location === 'MAIN') {
     mainHTML = `
       <div class="big-title" style="position:absolute;left:0;right:0;top:76px;">평화로운 모험가 마을</div>
-      <div class="sub-text" style="position:absolute;left:0;right:0;top:138px">ESC를 눌러 메뉴를 열 수 있습니다</div>
       <div class="section-label" style="position:absolute;left:0;right:0;top:243px">모 험</div>
       <div class="hrow" style="position:absolute;left:0;right:0;top:274px">
         <button class="btn" style="width:180px" id="v-go">갈림길로 떠나기</button>

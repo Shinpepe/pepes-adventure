@@ -58,6 +58,10 @@ body { font-family:'MaplestoryLight', 'DungGeunMo','Malgun Gothic',sans-serif; c
   border:1px solid #5a636e; border-bottom-width:2px; border-radius:3px;
   padding:2px 5px 1px; line-height:1; pointer-events:none; white-space:nowrap; }
 .btn.disabled .kbd { color:#5c6068; border-color:#3c3c3c; }
+@media (hover:none) {   /* 터치 기기: 물리 키가 없으므로 키캡 숨김 */
+  .btn .kbd { display:none; }
+  .btn.haskey { padding-right:8px; }
+}
 .btn.selected { background:linear-gradient(180deg,#2a6b72 0%,#1d4d54 55%,#163d43 100%);
   border-color:#5ad0dc; color:#d8f6fa;
   box-shadow:0 2px 6px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.14),
@@ -572,6 +576,7 @@ body { font-family:'MaplestoryLight', 'DungGeunMo','Malgun Gothic',sans-serif; c
     box-shadow:0 5px 12px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.12); } }
 .slot-card:active { transform:translateY(1px); }
 .slot-card .sc-no { font-size:11px; color:#9aa4b0; letter-spacing:1px; }
+.slot-card .sc-time { position:absolute; top:9px; right:14px; font-size:10px; color:#8fd4ae; }
 .slot-card .sc-main { margin-top:2px; }
 .slot-card .sc-sub { font-size:11px; color:#8a94a0; margin-top:1px; }
 .slot-card.empty { opacity:.55; }

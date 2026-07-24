@@ -7,11 +7,14 @@ function slotCardHTML(i) {
     <div class="sc-main">[ 비어 있음 ]</div>
     <div class="sc-sub">&nbsp;</div></button>`;
   try {
-    const d = JSON.parse(raw).data;
+    const parsed = JSON.parse(raw);
+    const d = parsed.data;
+    const ts = parsed.t ? new Date(parsed.t) : null;
+    const timeStr = ts ? `${ts.getMonth()+1}/${ts.getDate()} ${String(ts.getHours()).padStart(2,'0')}:${String(ts.getMinutes()).padStart(2,'0')}` : '';
     const pt = d.play_time||0, hh = String(Math.floor(pt/3600)).padStart(2,'0'), mm = String(Math.floor(pt%3600/60)).padStart(2,'0');
     const g = d.gold>=1e6 ? (d.gold/1e6).toFixed(1)+'M' : d.gold>=1000 ? Math.round(d.gold/1000)+'K' : fmt(d.gold);
     return `<button class="slot-card" id="slot-${i}">
-      <span class="sc-no">SLOT ${i}</span>
+      <span class="sc-no">SLOT ${i}</span>${timeStr?`<span class="sc-time">${timeStr} 저장</span>`:''}
       <div class="sc-main">${esc(d.player_name)} &nbsp;Lv.${fmt(d.level)} &nbsp;· ${esc(d.equipped_title||'')}</div>
       <div class="sc-sub">플레이 ${hh}:${mm} &nbsp;· ${g} Gold &nbsp;· 물약 ${d.potions||0}</div></button>`;
   } catch(e) {

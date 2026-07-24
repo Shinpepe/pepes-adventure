@@ -113,7 +113,8 @@ const engine = {
   },
   saveGame(slot) {
     try {
-      store.set('pepe_save_'+slot, JSON.stringify({ data:this.state, v:1 }));
+      store.set('pepe_save_'+slot, JSON.stringify({ data:this.state, v:1, t:Date.now() }));
+      if (typeof Cloud !== 'undefined' && Cloud.uid) Cloud.pushRanking(this.state);   /* 명예의 전당 등재 */
       this.addLog(`슬롯 ${slot}에 저장 완료!`);
       return true;
     } catch(e) { this.addLog('저장 실패: '+e); return false; }
@@ -144,7 +145,8 @@ const engine = {
 engine.resetData();
 
 /* 플레이 시간 누적 */
-setInterval(()=>{ if (engine.state) engine.state.play_time += 0.5; }, 500);
+let TIME_ACTIVE = false;   /* 로그인/타이틀/이름설정에서는 플레이타임 정지 */
+setInterval(()=>{ if (TIME_ACTIVE && engine.state) engine.state.play_time += 0.5; }, 500);
 
 /* ---------- 칭호 팝업 ---------- */
 function showTitlePopup(name) {

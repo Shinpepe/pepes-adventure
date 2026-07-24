@@ -53,6 +53,20 @@ const Cloud = {
     this.db.collection('saves').doc(this.uid).set(payload, { merge: true })
       .catch(() => { try { engine.addLog('⚠ 클라우드 동기화 실패 — 이 기기에는 저장되었습니다.'); } catch (e) {} });
   },
+  /* 명예의 전당 등재: 저장할 때마다 내 기록 갱신 (본인만 쓰기 가능 규칙) */
+  pushRanking(state) {
+    if (!this.uid || !this.db) return;
+    try {
+      this.db.collection('rankings').doc(this.uid).set({
+        name: state.player_name || '모험가',
+        level: state.level || 1,
+        gold: state.gold || 0,
+        medals: (state.bosses_defeated || []).length,
+        play_time: Math.floor(state.play_time || 0),
+        updatedAt: Date.now()
+      }, { merge: true }).catch(() => {});
+    } catch (e) {}
+  },
   logout() {
     if (this.ready) { try { firebase.auth().signOut(); } catch (e) {} }
     this.uid = null; this.userId = null;
@@ -74,6 +88,7 @@ const Cloud = {
 /* ---------- 로그인 화면 ---------- */
 function showLoginScreen() {
   clearView(); BGM.play('set');
+  TIME_ACTIVE = false;   /* 계정 화면 — 플레이타임 정지 */
   const sdk = Cloud.init();
 
   screenEl.innerHTML = `
@@ -143,12 +158,14 @@ function renderLoginForm(savedUser, offline) {
     if (!ok) { try { engine.addLog('⚠ 클라우드 세이브를 불러오지 못해 이 기기의 사본으로 시작합니다.'); } catch (e) {} }
     showTitleScreen();
   };
+  let submitting = false;   /* Enter 연타 이중 제출 방지 */
   const submit = async (mode) => {
+    if (submitting) return;
     const id = (document.getElementById('lg-id').value || '').trim();
     const pw = document.getElementById('lg-pw').value || '';
     const v = validate(id, pw);
     if (v) { msg(v); return; }
-    setBusy(true); msg(mode === 'signup' ? '계정을 만드는 중...' : '로그인 중...');
+    submitting = true; setBusy(true); msg(mode === 'signup' ? '계정을 만드는 중...' : '로그인 중...');
     const email = id.toLowerCase() + CLOUD_EMAIL_DOMAIN;
     try {
       const cred = mode === 'signup'
@@ -156,7 +173,7 @@ function renderLoginForm(savedUser, offline) {
         : await firebase.auth().signInWithEmailAndPassword(email, pw);
       SFX.click();
       await enterGame(cred.user);
-    } catch (e) { setBusy(false); msg(errText(e)); }
+    } catch (e) { submitting = false; setBusy(false); msg(errText(e)); }
   };
 
   if (savedUser && !offline) {
@@ -171,4 +188,59 @@ function renderLoginForm(savedUser, offline) {
   }
   bindBtn('lg-guest', () => { SFX.click(); Cloud.logout(); showTitleScreen(); });
   currentKeyHandler = null;
+}
+
+
+/* ---------- 명예의 전당 ---------- */
+function showHallOfFame() {
+  clearView(); BGM.play('set');
+  TIME_ACTIVE = false;
+  screenEl.innerHTML = `
+    <div class="bg-night bg-set" style="position:absolute;inset:0"></div>
+    <div style="position:absolute;inset:0;background:rgba(0,0,0,.51)"></div>
+    <div class="vcol sys-panel" style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:640px;gap:10px">
+      <div class="sys-head">명 예 의 전 당</div>
+      <div id="hall-body" style="width:100%;min-height:220px;font-size:13px">
+        <div style="text-align:center;color:#9aa4b0;padding:80px 0">기록을 불러오는 중...</div>
+      </div>
+      <div style="font-size:10px;color:#7f8b99">계정으로 게임을 저장하면 자동으로 등재됩니다.</div>
+      <button class="btn" style="width:250px" id="hf-back">◀ 돌아가기 (ESC)</button>
+    </div>`;
+  bindBtn('hf-back', ()=>showTitleScreen());
+  currentKeyHandler = e => { if (e.key === 'Escape') { SFX.click(); showTitleScreen(); } };
+
+  const bodyEl = () => document.getElementById('hall-body');
+  const fail = (t) => { const b = bodyEl(); if (b) b.innerHTML =
+    `<div style="text-align:center;color:#ffb45c;padding:80px 0;line-height:1.9">${t}</div>`; };
+
+  if (!Cloud.init()) return fail('클라우드 서버에 연결할 수 없습니다.<br>네트워크 연결을 확인해 주세요.');
+
+  Cloud.db.collection('rankings').orderBy('level', 'desc').limit(20).get().then(snap => {
+    const b = bodyEl(); if (!b) return;   /* 이미 다른 화면으로 이동함 */
+    if (snap.empty) return fail('아직 등재된 모험가가 없습니다.<br>첫 번째 전설의 주인공이 되어보세요!');
+    const fmtGold = g => g >= 1e6 ? (g/1e6).toFixed(1)+'M' : g >= 1000 ? Math.round(g/1000)+'K' : fmt(g);
+    const fmtTime = t => `${String(Math.floor(t/3600)).padStart(2,'0')}:${String(Math.floor(t%3600/60)).padStart(2,'0')}`;
+    const rankMark = i => i===0 ? '<span style="color:#ffd700">1위</span>'
+      : i===1 ? '<span style="color:#c0c8d0">2위</span>'
+      : i===2 ? '<span style="color:#d09a6a">3위</span>'
+      : `<span style="color:#7f8b99">${i+1}위</span>`;
+    let rows = `<div style="display:flex;gap:8px;padding:4px 10px;font-size:10px;color:#7f8b99;border-bottom:1px solid rgba(255,255,255,.1)">
+      <span style="width:38px">순위</span><span style="flex:1">이름</span><span style="width:56px">레벨</span>
+      <span style="width:64px;text-align:right">골드</span><span style="width:44px;text-align:center">훈장</span><span style="width:50px;text-align:right">시간</span></div>`;
+    snap.forEach((doc, idx) => {});
+    const list = []; snap.forEach(d => list.push({ id:d.id, ...d.data() }));
+    list.forEach((r, i) => {
+      const me = Cloud.uid && r.id === Cloud.uid;
+      rows += `<div style="display:flex;gap:8px;align-items:center;padding:6px 10px;border-radius:4px;
+        ${i%2?'background:rgba(255,255,255,.03);':''}${me?'background:rgba(140,233,154,.10);box-shadow:inset 0 0 0 1px rgba(140,233,154,.35);':''}">
+        <span style="width:38px;font-size:11px">${rankMark(i)}</span>
+        <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(r.name||'모험가')}${me?' <span style="font-size:9px;color:#8ce99a">(나)</span>':''}</span>
+        <span style="width:56px;color:#ffe9a8">Lv.${fmt(r.level||1)}</span>
+        <span style="width:64px;text-align:right;color:#ffd76a;font-size:12px">${fmtGold(r.gold||0)}</span>
+        <span style="width:44px;text-align:center;color:#8fd4ae">🏅${r.medals||0}</span>
+        <span style="width:50px;text-align:right;color:#9aa4b0;font-size:11px">${fmtTime(r.play_time||0)}</span>
+      </div>`;
+    });
+    b.innerHTML = rows;
+  }).catch(() => fail('기록을 불러오지 못했습니다.<br>잠시 후 다시 시도해 주세요.'));
 }

@@ -4,6 +4,7 @@
    타이틀 / 캐릭터 설정 / 튜토리얼
    ===================================================================== */
 function showTitleScreen() {
+  TIME_ACTIVE = false;   /* 플레이타임 정지 */
   clearView(); BGM.play('set');
   screenEl.innerHTML = `
     <div class="bg-night bg-set" style="position:absolute;inset:0"></div>
@@ -14,7 +15,7 @@ function showTitleScreen() {
       <div class="vcol" style="margin-top:8px">
         <button class="btn" style="width:280px;height:55px" id="t-new">게임 시작하기</button>
         <button class="btn" style="width:280px;height:55px" id="t-load">게임 불러오기</button>
-        <button class="btn" style="width:280px;height:55px" id="t-about">게임 정보</button>
+        <button class="btn" style="width:280px;height:55px" id="t-hall">명예의 전당</button>
       </div>
       <div style="font-size:11px;color:#8a94a0" id="t-account">${
         (typeof Cloud !== 'undefined' && Cloud.userId)
@@ -26,9 +27,7 @@ function showTitleScreen() {
   bindBtn('t-login', ()=>{ showLoginScreen(); });
   bindBtn('t-new', ()=>showSetup());
   bindBtn('t-load', ()=>showSystemMenu({mode:'LOAD_SELECT', fromTitle:true}));
-  bindBtn('t-about', ()=>{
-    alertModal('페페의모험 (웹 버전)\n\n마을을 거점으로 4개 지역을 탐험하는 RPG입니다.\n보스를 처치해 다음 지역의 봉인을 풀어보세요.\n\nESC : 시스템 메뉴 / 저장·불러오기');
-  });
+  bindBtn('t-hall', ()=>showHallOfFame());
 }
 function spawnStars(container, n) {
   if (!container) return;
@@ -85,6 +84,7 @@ function confirmModal(text, onYes, yesLabel='확인', noLabel='취소') {
 }
 
 function showSetup() {
+  TIME_ACTIVE = false;   /* 플레이타임 정지 */
   clearView(); BGM.play('set');
   let gender = null;
   screenEl.innerHTML = `
@@ -131,6 +131,7 @@ function showSetup() {
 /* ---------- 타이핑 대화 장면 (튜토리얼 / 보스 인트로 / 데이트) ---------- */
 function showDialogScene(opts) {
   clearView();
+  TIME_ACTIVE = true;   /* 대화 장면(튜토리얼/보스/데이트)도 게임 시간 */
   const { lines, onFinish, system=false, bgClass='bg-dark', bigEmoji=null, bigImg=null, stars=false, cafe=false, cafeImg=null, bgm=null } = opts;
   if (bgm) BGM.play(bgm);
   let li = 0, ci = 0, typing = null, finishing = false;
