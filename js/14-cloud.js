@@ -80,9 +80,8 @@ function showLoginScreen() {
     <div class="bg-night bg-set" style="position:absolute;inset:0"></div>
     <div style="position:absolute;inset:0;background:rgba(0,0,0,.51)"></div>
     <div class="center-panel" style="gap:14px;min-height:0;padding:32px 36px" id="login-panel">
-      <img class="title-icon" src="apple-touch-icon.png" alt="" draggable="false" style="width:72px;height:72px" onerror="this.remove()">
-      <div style="font-size:22px;font-weight:bold;letter-spacing:2px">페페의모험</div>
-      <div class="sys-head" style="font-size:15px;padding-bottom:8px">모험가 계정</div>
+      <img class="title-icon" src="apple-touch-icon.png" alt="" draggable="false" onerror="this.remove()">
+      <div style="font-size:32px;font-weight:bold;letter-spacing:2px;text-shadow:0 2px 0 #000, 0 0 22px rgba(174,182,192,.3)">페페의모험</div>
       <div id="login-body" style="display:flex;flex-direction:column;align-items:center;gap:12px;width:100%">
         <div style="font-size:13px;color:#9aa4b0">접속 확인 중...</div>
       </div>
@@ -115,7 +114,8 @@ function renderLoginForm(savedUser, offline) {
       <button class="btn" style="width:144px;height:46px" id="lg-signup">회원가입</button>
     </div>`}
     <button class="btn small" style="width:300px" id="lg-guest">게스트로 플레이 (이 기기에만 저장)</button>
-    <div style="font-size:10px;color:#7f8b99;text-align:center;line-height:1.8">아이디·비밀번호를 분실하면 복구할 수 없습니다.<br>꼭 기억해 주세요.</div>`;
+    <div style="font-size:10px;color:#7f8b99;text-align:center;line-height:1.8">아이디·비밀번호를 분실하면 복구할 수 없습니다.</div>
+    <div style="font-size:10px;color:#5f6a76;text-align:center;letter-spacing:.5px">© 2026 Shinhyunsu. All rights reserved.</div>`;
 
   const msg = t => { const el = document.getElementById('lg-msg'); if (el) el.textContent = t; };
   const setBusy = b => body.querySelectorAll('button').forEach(x => x.disabled = b);

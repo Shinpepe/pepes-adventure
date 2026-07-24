@@ -159,7 +159,7 @@ function bjValue(hand) {
 function showBlackjack() {
   clearView(); BGM.play('casino');
   const s = engine.state;
-  const BET = 50;
+  const BET = 100, MIN_GOLD = 200;   /* 홀덤과 동일 — 최소 200골드 미만이면 입장 불가 (파산 방지) */
   let deck, player, dealer, state = 'betting'; // betting / playing / dealer / result
   let prevD = 0, prevP = 0;   /* 직전 렌더 시 카드 장수 (신규 카드 판별용) */
 
@@ -213,7 +213,7 @@ function showBlackjack() {
     el.textContent = t; el.style.color = color;
   }
   function start() {
-    if (s.gold < BET) { msg('골드가 부족합니다!', '#ff8c50'); return; }
+    if (s.gold < MIN_GOLD) { msg(`골드가 부족합니다! (${MIN_GOLD}골드 이상 필요)`, '#ff8c50'); return; }
     prevD = 0; prevP = 0;
     s.gold -= BET;
     s.gold_spent_slot = (s.gold_spent_slot||0) + BET;
