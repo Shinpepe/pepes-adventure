@@ -615,6 +615,11 @@ body { font-family:'MaplestoryLight', 'DungGeunMo','Malgun Gothic',sans-serif; c
   height:26px; font-size:12px; color:#d5c8ee; }
 
 /* ---------- 타이틀 아이콘 ---------- */
-.title-icon { width:96px; height:96px; border-radius:18px;
-  filter:drop-shadow(0 6px 14px rgba(0,0,0,.55));
-  box-shadow:0 0 24px rgba(174,182,192,.22); }
+.title-icon { width:96px; height:96px; image-rendering:pixelated;
+  filter:drop-shadow(0 6px 12px rgba(0,0,0,.6)) drop-shadow(0 0 18px rgba(174,182,192,.25)); }
+
+/* ---------- 카드 게임 룸 (어두운 방 + 테이블 스포트라이트) ---------- */
+.table-room { background:
+  radial-gradient(ellipse 42% 34% at 62.5% 26%, rgba(140,220,175,.10), transparent 72%),
+  radial-gradient(ellipse 70% 60% at 62.5% 45%, rgba(255,255,255,.03), transparent 75%),
+  linear-gradient(180deg,#17131f 0%, #100d16 55%, #0a080e 100%); }

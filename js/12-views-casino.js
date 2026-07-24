@@ -164,7 +164,7 @@ function showBlackjack() {
   let prevD = 0, prevP = 0;   /* 직전 렌더 시 카드 장수 (신규 카드 판별용) */
 
   screenEl.innerHTML = `
-    <div class="bg-casino" style="position:absolute;inset:0"></div>
+    <div class="table-room" style="position:absolute;inset:0"></div>
     <div class="mid-title" style="position:absolute;left:250px;width:750px;top:26px">블랙잭</div>
     <div class="sub-text" style="position:absolute;left:250px;width:750px;top:60px" id="bj-balance"></div>
     <div class="felt-table" style="top:90px;height:352px;padding:20px 24px">
@@ -343,7 +343,7 @@ function showHoldem() {
   let revealed = 0, busy = false;
 
   screenEl.innerHTML = `
-    <div class="bg-casino" style="position:absolute;inset:0"></div>
+    <div class="table-room" style="position:absolute;inset:0"></div>
     <div class="mid-title" style="position:absolute;left:250px;width:750px;top:22px">텍사스 홀덤</div>
     <div class="sub-text" style="position:absolute;left:250px;width:750px;top:56px" id="hd-balance"></div>
     <div class="felt-table" style="top:80px;height:372px;padding:14px 24px">
