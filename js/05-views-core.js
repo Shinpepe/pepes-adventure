@@ -63,7 +63,7 @@ function playerHitFx() {
 let _prevGold = null, _prevExp = null, _prevLv = null, _goldAnim = null, _prevHpR = null;
 function invSlotsHTML() {
   const s = engine.state;
-  const best = engine.getBestItem();
+  const eq = engine.getEquipped();
   const n = Math.max(4, Math.ceil(s.inventory.length / 4) * 4);   /* 4칸 단위로 채움 */
   let out = '';
   for (let i = 0; i < n; i++) {
@@ -71,13 +71,27 @@ function invSlotsHTML() {
     if (!name) { out += `<div class="slot"></div>`; continue; }
     const it = ITEMS.find(x => x.name === name);
     const enh = engine.enhLevel(name);
-    out += `<div class="slot ${name === best ? 'equipped' : ''}" title="${esc(name)}${enh ? ' +' + enh : ''}">
+    const c = enh ? ENH_COLORS[enh] : null;   /* 강화 단계색: 초록→파랑→보라→노랑→빨강 */
+    const enhStyle = c ? `border-color:${c};box-shadow:inset 0 2px 5px rgba(0,0,0,.65), 0 0 8px ${c}66;` : '';
+    out += `<div class="slot ${name === eq ? 'equipped' : ''}" data-item="${esc(name)}"
+      style="${enhStyle}" title="${esc(name)}${enh ? ' +' + enh : ''} — 클릭하여 장착">
       ${it ? aimg(it.img, it.emoji, 24, '', 1.35) : '❔'}
-      ${enh ? `<span class="enh">+${enh}</span>` : ''}
+      ${enh ? `<span class="enh" style="color:${c}">+${enh}</span>` : ''}
     </div>`;
   }
   return out;
 }
+/* 인벤토리 슬롯 클릭 → 해당 장비 장착 (화면이 다시 그려져도 유지되는 위임 방식) */
+document.getElementById('stage').addEventListener('click', e => {
+  const slot = e.target.closest('.inv-slots .slot[data-item]');
+  if (!slot) return;
+  const name = slot.dataset.item;
+  if (engine.getEquipped() === name) return;   /* 이미 장착 중 */
+  engine.state.equipped_weapon = name;
+  SFX.click();
+  engine.addLog(`[${name}] 을(를) 장착했습니다.`);
+  refreshSidebar();
+});
 function sidebarHTML() {
   const s = engine.state;
   if (_prevGold === null) { _prevGold = s.gold; _prevExp = s.exp; _prevLv = s.level; }

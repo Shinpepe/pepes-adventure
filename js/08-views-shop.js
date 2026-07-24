@@ -64,6 +64,7 @@ function showShop(mode, page=0) {
           const price = Math.floor(it.price/2);
           s.inventory.splice(s.inventory.indexOf(it.name),1);
           if (s.enhance && !s.inventory.includes(it.name)) delete s.enhance[it.name];   /* 판매 시 강화 기록 정리 */
+          if (s.equipped_weapon === it.name && !s.inventory.includes(it.name)) s.equipped_weapon = null;   /* 장착 해제 → 최강 자동 */
           s.gold += price;
           engine.addLog(`${it.name}을(를) ${fmt(price)} Gold에 판매했습니다.`);
           SFX.coin();

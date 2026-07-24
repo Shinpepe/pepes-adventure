@@ -568,8 +568,7 @@ function enhCost(itemName) {
 function showEnhance() {
   clearView(); BGM.play('casino');
   const s = engine.state;
-  const bestRaw = engine.getBestItem();
-  const equipped = ITEMS.some(i=>i.name===bestRaw) ? bestRaw : null;   /* 빈 인벤토리('비어 있음') 방어 */
+  const equipped = engine.getEquipped();   /* 직접 장착 > 최강 자동 */
   const ownedWeapons = ITEMS.filter(i=>s.inventory.includes(i.name)).map(i=>i.name);   /* 공격력 오름차순 */
   let weapon = equipped;   /* 강화 대상 (기본: 장착중) — 목록에서 변경 가능 */
   const render = () => {

@@ -35,6 +35,7 @@ const engine = {
         chef:{food_count:{},grade:'normal'}
       },
       unlocked_titles:['모험가'], equipped_title:'모험가',
+      equipped_weapon:null,   /* 직접 장착한 무기 (null이면 최강 장비 자동 — 구세이브 호환) */
       gold_spent_slot:0, death_count:0, potions:0, enhance:{},
       items_ever_owned:[], foods_ever_eaten:[],
       log:['--- 모험의 시작 ---','모험가의 마을에 오신 것을 환영합니다.','평화로운 마을에 도착했습니다.'],
@@ -66,15 +67,18 @@ const engine = {
     if (!it) return 0;
     return Math.ceil(it.dmg * 0.12) * this.enhLevel(name);   /* 강화 1단계당 기본 공격력의 12% */
   },
+  getEquipped() {   /* 실제 장착 무기: 직접 선택 > 최강 자동 */
+    const s = this.state, e = s.equipped_weapon;
+    if (e && s.inventory.includes(e)) return e;
+    const best = this.getBestItem();
+    return ITEMS.some(i=>i.name===best) ? best : null;
+  },
   getTotalAtk() {
     const s = this.state;
     const base = 10 + (s.level - 1) * 5;
-    let bonus = 0, bestName = null;
-    for (const n of s.inventory) {
-      const it = ITEMS.find(i=>i.name===n);
-      if (it && it.dmg > bonus) { bonus = it.dmg; bestName = n; }
-    }
-    if (bestName) bonus += this.enhBonusOf(bestName);
+    const eq = this.getEquipped();
+    let bonus = 0;
+    if (eq) { const it = ITEMS.find(i=>i.name===eq); if (it) bonus = it.dmg + this.enhBonusOf(eq); }
     return { base, bonus, total: base + bonus };
   },
   getBestItem() {
