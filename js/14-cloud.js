@@ -96,7 +96,7 @@ function showLoginScreen() {
     <div class="bg-night bg-set" style="position:absolute;inset:0"></div>
     <div style="position:absolute;inset:0;background:rgba(0,0,0,.51)"></div>
     <div class="center-panel" style="gap:14px;min-height:0;padding:32px 36px" id="login-panel">
-      <img class="title-icon" src="apple-touch-icon.png" alt="" draggable="false" onerror="this.remove()">
+      <img class="title-icon" src="apple-touch-icon.png?v=2" alt="" draggable="false" onerror="this.remove()">
       <div style="font-size:32px;font-weight:bold;letter-spacing:2px;text-shadow:0 2px 0 #000, 0 0 22px rgba(174,182,192,.3)">페페의모험</div>
       <div id="login-body" style="display:flex;flex-direction:column;align-items:center;gap:12px;width:100%">
         <div style="font-size:13px;color:#9aa4b0">접속 확인 중...</div>
