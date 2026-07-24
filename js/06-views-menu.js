@@ -16,7 +16,14 @@ function showTitleScreen() {
         <button class="btn" style="width:280px;height:55px" id="t-load">게임 불러오기</button>
         <button class="btn" style="width:280px;height:55px" id="t-about">게임 정보</button>
       </div>
+      <div style="font-size:11px;color:#8a94a0" id="t-account">${
+        (typeof Cloud !== 'undefined' && Cloud.userId)
+          ? `계정: ${esc(Cloud.userId)} &nbsp;·&nbsp; <span style="cursor:pointer;text-decoration:underline" id="t-logout">로그아웃</span>`
+          : `게스트 모드 (이 기기에만 저장) &nbsp;·&nbsp; <span style="cursor:pointer;text-decoration:underline" id="t-login">계정 로그인</span>`
+      }</div>
     </div>`;
+  bindBtn('t-logout', ()=>{ Cloud.logout(); showLoginScreen(); });
+  bindBtn('t-login', ()=>{ showLoginScreen(); });
   bindBtn('t-new', ()=>showSetup());
   bindBtn('t-load', ()=>showSystemMenu({mode:'LOAD_SELECT', fromTitle:true}));
   bindBtn('t-about', ()=>{
