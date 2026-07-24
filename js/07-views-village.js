@@ -65,9 +65,10 @@ function showVillage(location='MAIN', npcMsg='') {
       const cx = [240,510,240,510][i], cy = [185,185,350,350][i];
       const medalFile = won ? m.img : 'medal_none.webp';
       return `
-        <img src="${ASSET_BASE}${medalFile}" alt="" style="position:absolute;left:${cx-65}px;top:${cy-62}px;width:130px;height:125px;object-fit:contain;filter:brightness(0)" onerror="this.remove()">
-        <div style="position:absolute;left:${cx-55}px;top:${cy-55}px;width:110px;height:110px;display:flex;align-items:center;justify-content:center;${won?'':'filter:grayscale(1) brightness(.5)'}">${aimg(medalFile, won?m.emoji:'🏅', 88, '', 1.25)}</div>
-        <div style="position:absolute;left:${cx-135}px;top:${cy+66}px;width:270px;text-align:center;font-size:11px;color:${won?'gold':'#646464'};text-shadow:1px 1px 0 #000">${won?esc(m.boss):'???'}</div>`;
+        <div class="medal-case ${won?'':'locked'}" style="left:${cx-75}px;top:${cy-75}px">
+          <div style="${won?'':'filter:grayscale(1) brightness(.5);'}display:flex;align-items:center;justify-content:center">${aimg(medalFile, won?m.emoji:'🏅', 84, '', 1.25)}</div>
+        </div>
+        <div style="position:absolute;left:${cx-135}px;top:${cy+82}px;width:270px;text-align:center;font-size:11px;color:${won?'gold':'#646464'};text-shadow:1px 1px 0 #000">${won?esc(m.boss):'???'}</div>`;
     }).join('');
     mainHTML = `
       <div class="bg-medal" style="position:absolute;inset:0"></div>
@@ -117,9 +118,9 @@ function showVillage(location='MAIN', npcMsg='') {
       : (shadowFile ? `
         <img src="${ASSET_BASE}${shadowFile}" alt="" style="position:absolute;left:52px;top:294px;width:266px;height:262px;object-fit:contain;filter:brightness(0)" onerror="this.remove()">` : '');
     const bubbleHTML = npcMsg ? `
-        <div style="position:absolute;left:340px;top:405px;transform:translateY(-50%);width:350px;min-height:120px;background:rgba(50,40,30,.86);border:2px solid #b48c50;display:flex;align-items:center;justify-content:center;text-align:center;font-size:14px;line-height:1.55;white-space:pre-line;padding:12px 20px;box-sizing:border-box">${esc(npcMsg)}</div>
+        <div class="speech-v2" style="position:absolute;left:340px;top:405px;transform:translateY(-50%);width:350px;min-height:120px;display:flex;align-items:center;justify-content:center;text-align:center;font-size:14px;line-height:1.55;white-space:pre-line;padding:12px 20px;box-sizing:border-box">${esc(npcMsg)}</div>
         <div style="position:absolute;left:318px;top:395px;border:10px solid transparent;border-right:14px solid #b48c50"></div>
-        <div style="position:absolute;left:323px;top:397px;border:8px solid transparent;border-right:12px solid rgb(50,40,30)"></div>` : '';
+        <div style="position:absolute;left:323px;top:397px;border:8px solid transparent;border-right:12px solid rgb(56,44,32)"></div>` : '';
     mainHTML = `
       <div class="${conf.bg}" style="position:absolute;inset:0"></div>
       <div class="main-dim" style="background:rgba(0,0,0,.51)"></div>
@@ -204,6 +205,7 @@ function toggleMap() {
     ov.innerHTML = `
       <img src="${ASSET_BASE}world_map.webp" alt="" style="position:absolute;left:625px;top:350px;transform:translate(-50%,-50%);width:700px;height:700px;max-height:696px;object-fit:contain"
         onerror="const f=document.getElementById('map-fallback'); if(f) f.style.display='block'; this.remove()">
+      <div class="map-vignette"></div>
       <div id="map-fallback" style="display:none;position:absolute;left:625px;top:350px;transform:translate(-50%,-50%);width:640px;height:560px;
                   background:linear-gradient(160deg,#d9c9a3,#c4b087);border:6px double #7a643c;padding:30px;color:#3c2f1e;box-sizing:border-box">
         <div style="text-align:center;font-size:24px;font-weight:bold">— 세 계 지 도 —</div>

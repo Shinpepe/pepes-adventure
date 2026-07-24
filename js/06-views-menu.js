@@ -9,7 +9,7 @@ function showTitleScreen() {
     <div class="bg-night bg-set" style="position:absolute;inset:0"></div>
     <div style="position:absolute;inset:0;background:rgba(0,0,0,.51)"></div>
     <div class="center-panel">
-      <div style="font-size:36px;font-weight:bold">페페의모험</div>
+      <div class="game-logo">페페의모험</div>
       <div class="vcol" style="margin-top:8px">
         <button class="btn" style="width:280px;height:55px" id="t-new">게임 시작하기</button>
         <button class="btn" style="width:280px;height:55px" id="t-load">게임 불러오기</button>
@@ -44,7 +44,7 @@ function alertModal(text, onClose) {
   const wrap = document.createElement('div');
   wrap.id = 'modal-wrap';
   wrap.style.cssText = 'position:absolute;inset:0;background:rgba(0,0,0,.7);z-index:70;display:flex;align-items:center;justify-content:center';
-  wrap.innerHTML = `<div style="background:#1e2328;border:2px solid #f0f0f0;padding:36px;max-width:560px;text-align:center">
+  wrap.innerHTML = `<div class="modal-panel">
     <div style="font-size:15px;line-height:2;white-space:pre-line">${esc(text)}</div>
     <button class="btn" style="width:200px;margin-top:24px" id="modal-ok">확인</button></div>`;
   screenEl.appendChild(wrap);
@@ -62,7 +62,7 @@ function confirmModal(text, onYes, yesLabel='확인', noLabel='취소') {
   const wrap = document.createElement('div');
   wrap.id = 'modal-wrap';
   wrap.style.cssText = 'position:absolute;inset:0;background:rgba(0,0,0,.7);z-index:70;display:flex;align-items:center;justify-content:center';
-  wrap.innerHTML = `<div style="background:#1e2328;border:2px solid #f0f0f0;padding:36px;max-width:560px;text-align:center">
+  wrap.innerHTML = `<div class="modal-panel">
     <div style="font-size:15px;line-height:2;white-space:pre-line">${esc(text)}</div>
     <div style="display:flex;gap:14px;justify-content:center;margin-top:24px">
       <button class="btn" style="width:160px" id="modal-yes">${esc(yesLabel)}</button>
@@ -135,7 +135,7 @@ function showDialogScene(opts) {
         style="position:absolute;left:150px;top:0;width:700px;height:700px;object-fit:cover"
         onerror="document.getElementById('date-fb').style.display='flex';this.remove()">` : ''}
     ${bigEmoji ? `<div style="position:absolute;left:0;right:0;top:60px;text-align:center;filter:drop-shadow(0 0 30px rgba(0,0,0,.8))">${aimg(bigImg,`<span style="filter:brightness(0.25)">${bigEmoji}</span>`,230,'',1.35)}</div>` : ''}
-    <div class="dialog-box ${system?'system':''}" style="${cafe?'left:170px;right:170px;bottom:110px;height:100px':'left:150px;right:150px;bottom:130px;height:200px'}">
+    <div class="dialog-box ${system?'system':cafe?'date':''}" style="${cafe?'left:170px;right:170px;bottom:110px;height:100px':'left:150px;right:150px;bottom:130px;height:200px'}">
       <div class="speaker-tag" id="dlg-speaker" style="display:none"></div>
       <div id="dlg-text" style="white-space:pre-line"></div>
       <div class="blink-arrow" id="dlg-arrow" style="display:none">▼</div>

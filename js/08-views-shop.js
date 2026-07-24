@@ -24,9 +24,10 @@ function showShop(mode, page=0) {
         <div class="item-icon">${aimg(it.img,it.emoji,48,'',1.4)}</div>
         <div class="item-info">
           <div class="nm">${isBuy ? esc(it.name) : enhTag(it.name)}</div>
-          <div class="ds">${esc(it.desc)} / ATK +${fmt(it.dmg)}</div>
+          <div class="ds">${esc(it.desc)}</div>
         </div>
-        <div class="item-price" style="${isBuy?'':'color:#ffd700'}">${fmt(price)} Gold</div>
+        <span class="stat-chip atk">공격 +${fmt(it.dmg)}</span>
+        <div class="item-price"><span class="price-chip ${isBuy?'':'sell'}"><img src="${ASSET_BASE}icon_gold.webp" alt="" onerror="this.remove()">${fmt(price)}</span></div>
         <button class="btn ${owned?'disabled':''}" style="width:88px" data-idx="${i}">${owned?'보유 중':(isBuy?'구매':'판매')}</button>
       </div>`;
     }).join('');
@@ -99,9 +100,10 @@ function showRestaurant(page=0) {
       <div class="item-icon">${aimg(f.img,f.emoji,48,'',1.4)}</div>
       <div class="item-info">
         <div class="nm">${esc(f.name)}</div>
-        <div class="ds">${esc(f.desc)} / MAX HP +${fmt(f.hp)}</div>
+        <div class="ds">${esc(f.desc)}</div>
       </div>
-      <div class="item-price">${fmt(f.price)} Gold</div>
+      <span class="stat-chip hp">최대 HP +${fmt(f.hp)}</span>
+      <div class="item-price"><span class="price-chip"><img src="${ASSET_BASE}icon_gold.webp" alt="" onerror="this.remove()">${fmt(f.price)}</span></div>
       <button class="btn" style="width:88px" data-idx="${i}">주문하기</button>
     </div>`).join('');
 

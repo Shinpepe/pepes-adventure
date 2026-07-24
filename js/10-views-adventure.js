@@ -172,7 +172,11 @@ function showBattle(monster, areaId) {
       <div class="boss-warn" id="b-warn" style="display:none"></div>
       <div class="monster-name" id="b-name">${esc(monster.name)}</div>
       <div class="mhp-wrap">
-        <div class="mhp-bg"><div class="mhp-fill" id="b-hpfill" style="width:100%"></div></div>
+        <div class="mhp-bg">
+          <div class="mhp-ghost" id="b-hpghost" style="width:100%"></div>
+          <div class="mhp-fill" id="b-hpfill" style="width:100%"></div>
+          <div class="mhp-ticks"></div>
+        </div>
         <div class="mhp-label" id="b-hplabel">HP : ${fmt(mHp)} / ${fmt(mMaxHp)}</div>
       </div>
       <div class="monster-shadow"></div>
@@ -190,6 +194,8 @@ function showBattle(monster, areaId) {
     const fill = document.getElementById('b-hpfill');
     fill.style.width = (ratio*100)+'%';
     fill.style.background = ratio > 0.3 ? '#9632fa' : '#ff3232';
+    const ghost = document.getElementById('b-hpghost');
+    if (ghost) ghost.style.width = (ratio*100)+'%';   /* CSS 지연 트랜지션이 잔상 효과를 만든다 */
     document.getElementById('b-hplabel').textContent = `HP : ${fmt(Math.max(0,Math.floor(mHp)))} / ${fmt(mMaxHp)}`;
   }
   function dropGold() {

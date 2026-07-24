@@ -18,6 +18,27 @@ function clearView() {
 document.addEventListener('keydown', e => {
   if (currentKeyHandler) currentKeyHandler(e);
 });
+
+/* ---------- 단축키 키캡 자동 분리 ----------
+   버튼 텍스트 끝의 "(Z)" "(SPACE)" 등을 오른쪽 키캡 배지로 변환.
+   화면이 다시 그려질 때마다 자동 적용되므로 각 뷰 코드는 수정 불필요. */
+const KBD_RE = /\((SPACE|ENTER|ESC|[A-Z])\)\s*$/;
+function decorateKeycaps() {
+  document.querySelectorAll('#stage .btn').forEach(b => {
+    if (b.querySelector('.kbd')) return;                       /* 이미 처리됨 */
+    const m = b.textContent.match(KBD_RE);
+    if (!m) return;
+    const tn = [...b.childNodes].reverse()
+      .find(n => n.nodeType === 3 && KBD_RE.test(n.textContent));
+    if (!tn) return;
+    tn.textContent = tn.textContent.replace(KBD_RE, '').replace(/\s+$/, '');
+    const k = document.createElement('span');
+    k.className = 'kbd'; k.textContent = m[1];
+    b.appendChild(k); b.classList.add('haskey');
+  });
+}
+new MutationObserver(decorateKeycaps)
+  .observe(document.getElementById('stage'), { childList:true, subtree:true });
 function esc(str){ return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 function fmt(n){ return Number(n).toLocaleString('ko-KR'); }
 
@@ -39,7 +60,24 @@ function playerHitFx() {
   }
 }
 
-let _prevGold = null, _prevExp = null, _prevLv = null, _goldAnim = null;
+let _prevGold = null, _prevExp = null, _prevLv = null, _goldAnim = null, _prevHpR = null;
+function invSlotsHTML() {
+  const s = engine.state;
+  const best = engine.getBestItem();
+  const n = Math.max(4, Math.ceil(s.inventory.length / 4) * 4);   /* 4칸 단위로 채움 */
+  let out = '';
+  for (let i = 0; i < n; i++) {
+    const name = s.inventory[i];
+    if (!name) { out += `<div class="slot"></div>`; continue; }
+    const it = ITEMS.find(x => x.name === name);
+    const enh = engine.enhLevel(name);
+    out += `<div class="slot ${name === best ? 'equipped' : ''}" title="${esc(name)}${enh ? ' +' + enh : ''}">
+      ${it ? aimg(it.img, it.emoji, 24, '', 1.35) : '❔'}
+      ${enh ? `<span class="enh">+${enh}</span>` : ''}
+    </div>`;
+  }
+  return out;
+}
 function sidebarHTML() {
   const s = engine.state;
   if (_prevGold === null) { _prevGold = s.gold; _prevExp = s.exp; _prevLv = s.level; }
@@ -48,31 +86,32 @@ function sidebarHTML() {
   const needed = engine.neededExp();
   const expRatio = Math.min(1, s.exp / Math.max(1, needed)) * 100;
   const hpColor = (s.hp / s.max_hp) <= 0.3 ? '#c85050' : '#50c850';
-  const best = engine.getBestItem();
-  let inv = '비어 있음';
-  if (s.inventory.length) {
-    inv = s.inventory.map(n=>`<div>${enhTag(n)}${n===best?' (장착중)':''}</div>`).join('');
-  }
   return `<div class="sidebar">
-    <h2>${esc(s.player_name)||'&nbsp;'}</h2>
-    <div class="title-line">Lv.${fmt(s.level)} ${esc(s.equipped_title)}</div>
+    <h2>${esc(s.player_name)||'&nbsp;'}<small>Lv.${fmt(s.level)}</small></h2>
+    <span class="title-chip">${esc(s.equipped_title)}</span>
     <div class="gauge-wrap">
-      <div class="gauge-bg"><div class="gauge-fill ${(s.hp/s.max_hp)<=0.3?'low':''}" style="width:${hpRatio}%;background:${hpColor}"></div></div>
-      <div class="gauge-label">HP : ${fmt(Math.max(0,Math.floor(s.hp)))} / ${fmt(s.max_hp)}</div>
+      <div class="gauge-cap"><b>HP</b><span>${fmt(Math.max(0,Math.floor(s.hp)))} / ${fmt(s.max_hp)}</span></div>
+      <div class="gauge-bg">
+        <div class="gauge-ghost" style="width:${hpRatio}%"></div>
+        <div class="gauge-fill ${(s.hp/s.max_hp)<=0.3?'low':''}" style="width:${hpRatio}%;background:${hpColor}"></div>
+        <div class="gauge-ticks"></div>
+      </div>
     </div>
     <div class="gauge-wrap">
-      <div class="gauge-bg" style="height:12px"><div class="gauge-fill" style="width:${expRatio}%;background:#c8c832"></div></div>
-      <div class="gauge-label">EXP : ${fmt(s.exp)} / ${fmt(needed)}</div>
+      <div class="gauge-cap"><b>EXP</b><span>${fmt(s.exp)} / ${fmt(needed)}</span></div>
+      <div class="gauge-bg" style="height:10px">
+        <div class="gauge-fill" style="width:${expRatio}%;background:#c8c832"></div>
+        <div class="gauge-ticks"></div>
+      </div>
     </div>
-    <div class="stats-box">
-      <div>ATK : ${fmt(atk.total)}</div>
-      <div class="sub">(기본 : ${fmt(atk.base)} + 장비 : ${fmt(atk.bonus)})</div>
-      <div style="margin-top:8px" id="sb-gold-row">Gold : <span id="sb-gold-v">${fmt(s.gold)}</span></div>
-      <div style="margin-top:8px">Kills : ${fmt(totalKills(s))}</div>
-      <div style="margin-top:8px">물약 : ${s.potions||0} / 5</div>
+    <div class="stat-grid">
+      <div class="row"><span class="k">공격력</span><span class="v">${fmt(atk.total)} <small>(${fmt(atk.base)}+${fmt(atk.bonus)})</small></span></div>
+      <div class="row"><span class="k">골드</span><span class="v" id="sb-gold-row"><span id="sb-gold-v">${fmt(s.gold)}</span></span></div>
+      <div class="row"><span class="k">처치</span><span class="v">${fmt(totalKills(s))}</span></div>
+      <div class="row"><span class="k">물약</span><span class="v">${s.potions||0} / 5</span></div>
     </div>
     <div class="inv-title">인벤토리</div>
-    <div class="inv-list">${inv}</div>
+    <div class="inv-slots">${invSlotsHTML()}</div>
   </div>`;
 }
 function classifyLog(l) {
@@ -114,12 +153,22 @@ function animateGoldCount(from, to) {
 }
 function refreshSidebar() {
   const s = engine.state;
-  const pg = _prevGold, pe = _prevExp, pl = _prevLv;
+  const pg = _prevGold, phr = _prevHpR;
+  const hpRatio = Math.max(0, s.hp / s.max_hp) * 100;
   const old = screenEl.querySelector('.sidebar');
   if (old) { old.outerHTML = sidebarHTML(); }
   if (old && pg !== null && s.gold !== pg) {
     animateGoldCount(pg, s.gold);   /* 플로팅 없이 카운트업만 */
   }
-  _prevGold = s.gold; _prevExp = s.exp; _prevLv = s.level;
+  /* 유령바: 피해를 입으면 빨간 잔상이 이전 HP 지점에서 늦게 따라온다 */
+  if (old && phr !== null && phr > hpRatio) {
+    const gh = screenEl.querySelector('.sidebar .gauge-ghost');
+    if (gh) {
+      gh.style.transition = 'none'; gh.style.width = phr + '%';
+      void gh.offsetWidth;
+      gh.style.transition = ''; gh.style.width = hpRatio + '%';
+    }
+  }
+  _prevGold = s.gold; _prevExp = s.exp; _prevLv = s.level; _prevHpR = hpRatio;
 }
 

@@ -30,19 +30,19 @@ function showSlotMachine() {
 
   screenEl.innerHTML = `
     <div style="position:absolute;inset:0;background:rgb(20,20,30)"></div>
-    <div style="position:absolute;left:270px;top:20px;width:710px;height:510px;background:rgb(25,25,40);border:2px solid rgb(80,100,180)"></div>
+    <div style="position:absolute;left:270px;top:20px;width:710px;height:510px;background:linear-gradient(180deg,#241a36 0%,#181128 60%,#120c1e 100%);border:2px solid #8a5cff;border-radius:10px;box-shadow:inset 0 0 40px rgba(0,0,0,.5), inset 0 0 0 2px rgba(138,92,255,.18)"></div>
     <div class="mid-title" style="position:absolute;left:250px;width:750px;top:88px;font-size:24px">슬롯머신</div>
     <div class="sub-text" style="position:absolute;left:250px;width:750px;top:127px">행운을 시험해보세요!</div>
     <div style="position:absolute;left:250px;width:750px;top:160px;text-align:center;font-size:13px;color:#c8c8c8" id="sl-balance"></div>
     <div style="position:absolute;left:300px;top:182px;width:170px;text-align:center;font-size:13px;color:#c8c8c8;line-height:2.15">
       <div>[ 배율표 ]</div>
-      ${SLOT_SYMBOLS.map(x=>`<div style="display:flex;justify-content:space-between;font-size:12px"><span>${x.key}</span><span>+${x.reward}G</span></div>`).join('')}
+      ${SLOT_SYMBOLS.map(x=>`<div style="display:flex;justify-content:space-between;align-items:center;font-size:12px;height:27px"><img src="${ASSET_BASE}${x.img}" alt="" style="width:34px;height:24px;object-fit:contain" onerror="this.style.display='none'"><span>+${x.reward}G</span></div>`).join('')}
     </div>
-    <div style="position:absolute;left:515px;top:205px;width:380px;height:130px;background:rgb(40,40,60);border:3px solid rgb(80,100,180)"></div>
+    <div style="position:absolute;left:515px;top:205px;width:380px;height:130px;background:#1a1230;border:3px solid #7a4fd4;border-radius:10px;box-shadow:inset 0 4px 14px rgba(0,0,0,.6), 0 0 14px rgba(138,92,255,.25)"></div>
     <div class="slot-reels" style="position:absolute;left:530px;top:225px;width:350px;display:flex;justify-content:space-between">
-      <div class="slot-reel" id="reel-0" style="width:90px;height:90px;background:rgb(30,30,50);display:flex;align-items:center;justify-content:center">${slotCellHTML(SLOT_SYMBOLS[5])}</div>
-      <div class="slot-reel" id="reel-1" style="width:90px;height:90px;background:rgb(30,30,50);display:flex;align-items:center;justify-content:center">${slotCellHTML(SLOT_SYMBOLS[5])}</div>
-      <div class="slot-reel" id="reel-2" style="width:90px;height:90px;background:rgb(30,30,50);display:flex;align-items:center;justify-content:center">${slotCellHTML(SLOT_SYMBOLS[5])}</div>
+      <div class="slot-reel" id="reel-0" style="width:90px;height:90px;display:flex;align-items:center;justify-content:center">${slotCellHTML(SLOT_SYMBOLS[5])}</div>
+      <div class="slot-reel" id="reel-1" style="width:90px;height:90px;display:flex;align-items:center;justify-content:center">${slotCellHTML(SLOT_SYMBOLS[5])}</div>
+      <div class="slot-reel" id="reel-2" style="width:90px;height:90px;display:flex;align-items:center;justify-content:center">${slotCellHTML(SLOT_SYMBOLS[5])}</div>
     </div>
     <div id="sl-msg" style="position:absolute;left:515px;top:358px;width:380px;text-align:center;font-size:15px;font-weight:bold;height:22px"></div>
     <div style="position:absolute;left:250px;width:750px;top:400px;display:flex;flex-direction:column;align-items:center;gap:15px">
@@ -158,13 +158,13 @@ function showBlackjack() {
     <div class="bg-casino" style="position:absolute;inset:0"></div>
     <div class="mid-title" style="position:absolute;left:250px;width:750px;top:26px">블랙잭</div>
     <div class="sub-text" style="position:absolute;left:250px;width:750px;top:60px" id="bj-balance"></div>
-    <div class="shop-panel blue" style="top:90px;height:352px;padding:20px 24px">
+    <div class="felt-table" style="top:90px;height:352px;padding:20px 24px">
       <div style="text-align:center">
-        <div style="font-size:13px;color:#c8c8c8">딜러 <span id="bj-dscore"></span></div>
+        <div class="felt-lbl">딜러 <span id="bj-dscore"></span></div>
         <div id="bj-dealer" style="margin-top:10px;min-height:86px"></div>
       </div>
       <div style="text-align:center;margin-top:22px">
-        <div style="font-size:13px;color:#c8c8c8">플레이어 <span id="bj-pscore"></span></div>
+        <div class="felt-lbl">플레이어 <span id="bj-pscore"></span></div>
         <div id="bj-player" style="margin-top:10px;min-height:86px"></div>
       </div>
       <div id="bj-msg" style="text-align:center;font-size:17px;font-weight:bold;margin-top:16px;height:24px"></div>
@@ -333,9 +333,9 @@ function showHoldem() {
     <div class="bg-casino" style="position:absolute;inset:0"></div>
     <div class="mid-title" style="position:absolute;left:250px;width:750px;top:22px">텍사스 홀덤</div>
     <div class="sub-text" style="position:absolute;left:250px;width:750px;top:56px" id="hd-balance"></div>
-    <div class="shop-panel blue" style="top:80px;height:372px;padding:14px 24px">
+    <div class="felt-table" style="top:80px;height:372px;padding:14px 24px">
       <div style="text-align:center">
-        <div style="font-size:13px;color:#c8c8c8">상대 (AI)</div>
+        <div class="felt-lbl">상대 (AI)</div>
         <div id="hd-ai" style="margin-top:8px;min-height:86px"></div>
       </div>
       <div style="text-align:center;margin-top:5px">
@@ -343,10 +343,10 @@ function showHoldem() {
         <div id="hd-comm" style="margin-top:8px;min-height:86px"></div>
       </div>
       <div style="text-align:center;margin-top:5px">
-        <div style="font-size:13px;color:#c8c8c8">플레이어 <span id="hd-pname"></span></div>
+        <div class="felt-lbl">플레이어 <span id="hd-pname"></span></div>
         <div id="hd-hole" style="margin-top:8px;min-height:86px"></div>
       </div>
-      <div id="hd-msg" style="position:absolute;right:14px;top:12px;max-width:250px;background:rgba(10,10,24,.85);border:1px solid rgb(80,100,180);padding:8px 12px;font-size:13px;font-weight:bold;text-align:right;line-height:1.6;white-space:pre-line;display:none"></div>
+      <div id="hd-msg" style="position:absolute;right:14px;top:12px;max-width:250px;background:rgba(12,20,14,.88);border:1px solid rgba(215,180,120,.55);border-radius:6px;padding:8px 12px;font-size:13px;font-weight:bold;text-align:right;line-height:1.6;white-space:pre-line;display:none"></div>
     </div>
     <div class="pager" id="hd-panel" style="position:absolute;left:250px;width:750px;bottom:172px;gap:10px"></div>
     ${sidebarHTML()}${logHTML()}`;
@@ -578,7 +578,7 @@ function showEnhance() {
                 <span style="${wlv?`color:${ENH_COLORS[wlv]}`:''}">${esc(n)}${wlv?` +${wlv}`:''}</span>${n===equipped?' <span style="color:#96d2ff">●</span>':''}</button>`;
             }).join('')}
           </div>` : ''}
-        <div class="enh-panel" id="enh-panel" style="position:absolute;left:175px;top:80px;width:400px;height:378px;background:rgba(20,16,12,.92);border:2px solid #b48c50;padding:24px;text-align:center">
+        <div class="enh-panel" id="enh-panel" style="position:absolute;left:175px;top:80px;width:400px;height:378px;padding:24px;text-align:center">
           ${weapon ? `
             <div class="enh-img" id="enh-img" style="display:inline-block">${aimg(it.img, it.emoji, 120, '', 1.2)}</div>
             <div style="font-size:19px;margin-top:26px" id="enh-name">${enhTag(weapon)}</div>
@@ -589,7 +589,7 @@ function showEnhance() {
               ? `<div style="color:#ff5050;font-size:16px">최대 강화 단계입니다!</div>`
               : `<div style="font-size:13px;line-height:2.1">
                   다음 단계 : <span style="color:${ENH_COLORS[lv+1]}">+${lv+1}</span> (공격력 +${fmt(per)})<br>
-                  성공 확률 : ${rate}% &nbsp;·&nbsp; 비용 : ${fmt(cost)} Gold<br>
+                  <span class="rate-chip ${rate>=60?'ok':'risk'}">성공 확률 ${rate}%</span> <span class="price-chip">비용&nbsp;<img src="${ASSET_BASE}icon_gold.webp" alt="" onerror="this.remove()">${fmt(cost)}</span><br>
                   <span style="color:#b4a08c">${lv >= ENH_DROP_FROM ? '실패 시 강화 단계가 1 하락합니다' : '&nbsp;'}</span></div>`}
             <div style="margin-top:16px" id="enh-msg" style="min-height:22px"></div>`
           : `<div style="height:100%;display:flex;align-items:center;justify-content:center"><div style="font-size:15px;line-height:2">강화할 무기가 없습니다.<br>
