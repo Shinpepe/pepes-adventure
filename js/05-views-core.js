@@ -128,6 +128,16 @@ function sidebarHTML() {
     <div class="inv-slots">${invSlotsHTML()}</div>
   </div>`;
 }
+/* 사이드바가 그려질 때마다 추적값 동기화 — 로드/직접 렌더 후 유령바·골드 카운트가
+   이전 세션 값으로 오작동하는 것을 원천 차단 (refreshSidebar는 호출 전에 이전 값을 캡처함) */
+const _sidebarHTMLRaw = sidebarHTML;
+sidebarHTML = function() {
+  const html = _sidebarHTMLRaw();
+  const s = engine.state;
+  _prevGold = s.gold; _prevExp = s.exp; _prevLv = s.level;
+  _prevHpR = Math.max(0, s.hp / s.max_hp) * 100;
+  return html;
+};
 function classifyLog(l) {
   if (l.startsWith('---') || l.startsWith('SYSTEM') || l.startsWith('[SYSTEM')) return 'lg-sys';
   if (/(레벨업|칭호|배웠|해금|개방|훈장|격파)/.test(l)) return 'lg-lvl';
@@ -183,6 +193,6 @@ function refreshSidebar() {
       gh.style.transition = ''; gh.style.width = hpRatio + '%';
     }
   }
-  _prevGold = s.gold; _prevExp = s.exp; _prevLv = s.level; _prevHpR = hpRatio;
+  /* 추적값 갱신은 sidebarHTML 내부에서 일괄 수행됨 */
 }
 
