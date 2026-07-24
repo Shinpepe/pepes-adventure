@@ -65,10 +65,10 @@ function showVillage(location='MAIN', npcMsg='') {
       const cx = [240,510,240,510][i], cy = [185,185,350,350][i];
       const medalFile = won ? m.img : 'medal_none.webp';
       return `
-        <div class="medal-case ${won?'':'locked'}" style="left:${cx-75}px;top:${cy-75}px">
-          <div style="${won?'':'filter:grayscale(1) brightness(.5);'}display:flex;align-items:center;justify-content:center">${aimg(medalFile, won?m.emoji:'🏅', 84, '', 1.25)}</div>
+        <div class="medal-case ${won?'':'locked'}" style="left:${cx-66}px;top:${cy-66}px">
+          <div style="${won?'':'filter:grayscale(1) brightness(.5);'}display:flex;align-items:center;justify-content:center">${aimg(medalFile, won?m.emoji:'🏅', 76, '', 1.25)}</div>
         </div>
-        <div style="position:absolute;left:${cx-135}px;top:${cy+82}px;width:270px;text-align:center;font-size:11px;color:${won?'gold':'#646464'};text-shadow:1px 1px 0 #000">${won?esc(m.boss):'???'}</div>`;
+        <div style="position:absolute;left:${cx-135}px;top:${cy+74}px;width:270px;text-align:center;font-size:11px;color:${won?'gold':'#646464'};text-shadow:1px 1px 0 #000">${won?esc(m.boss):'???'}</div>`;
     }).join('');
     mainHTML = `
       <div class="bg-medal" style="position:absolute;inset:0"></div>

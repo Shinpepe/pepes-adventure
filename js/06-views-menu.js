@@ -105,9 +105,10 @@ function showSetup() {
     if (!name) { msg.textContent = '이름을 입력해 주세요.'; msg.style.color='#ff8c50'; return; }
     if (name.length > 8) { msg.textContent = '이름은 최대 8글자까지 가능합니다.'; msg.style.color='#ff8c50'; return; }
     if (!gender) { msg.textContent = '성별을 선택해 주세요.'; msg.style.color='#ff8c50'; return; }
+    engine.resetData();                     /* 새 게임: 이전 세션(불러온 세이브 포함) 완전 초기화 */
+    _prevGold = _prevExp = _prevLv = _prevHpR = null;   /* 사이드바 카운트업/유령바 추적값도 리셋 */
     engine.state.player_name = name;
     engine.state.gender = gender;
-    engine.state.play_time = 0;
     showDialogScene({
       lines: TUTORIAL_MESSAGES, system:true, bgClass:'bg-night bg-set', bgm:'set',
       onFinish: ()=>showVillage()
