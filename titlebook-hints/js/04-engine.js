@@ -1,0 +1,173 @@
+'use strict';
+/* [분할 04] 게임 엔진 (상태/저장/칭호/호감도) */
+/* =====================================================================
+   게임 엔진 (상태 / 저장 / 칭호)
+   ===================================================================== */
+/* ---------- 세이브 호환용 재귀 병합 ----------
+   resetData()의 기본값 위에 저장값을 "중첩 객체까지" 덮어쓴다.
+   → 이후 버전에서 npc_affinity 등에 새 필드를 추가해도
+     옛 세이브를 불러올 때 기본값이 보존되어 크래시가 나지 않는다.
+   배열은 저장값을 통째로 사용한다(인벤토리·처치 목록 등은 병합 대상이 아님). */
+function deepMerge(base, saved) {
+  for (const k in saved) {
+    const sv = saved[k];
+    if (sv && typeof sv === 'object' && !Array.isArray(sv)
+        && base[k] && typeof base[k] === 'object' && !Array.isArray(base[k])) {
+      deepMerge(base[k], sv);
+    } else {
+      base[k] = sv;
+    }
+  }
+  return base;
+}
+
+const engine = {
+  state: null,
+  resetData() {
+    this.state = {
+      player_name:'', gender:'',
+      hp:200, max_hp:200, gold:50, level:1, exp:0, inventory:[],
+      kills_by_area:{forest:0,desert:0,swamp:0,mountain:0},
+      bosses_defeated:[], skills:[],
+      npc_affinity:{
+        inn:{count:0,grade:'normal'},
+        shop:{bought:[],grade:'normal'},
+        chef:{food_count:{},spent:0,grade:'normal'}
+      },
+      unlocked_titles:['모험가'], equipped_title:'모험가',
+      equipped_weapon:null,   /* 직접 장착한 무기 (null이면 최강 장비 자동 — 구세이브 호환) */
+      gold_spent_slot:0, death_count:0, potions:0, enhance:{},
+      items_ever_owned:[], foods_ever_eaten:[],
+      log:['--- 모험의 시작 ---','모험가의 마을에 오신 것을 환영합니다.','평화로운 마을에 도착했습니다.'],
+      play_time:0
+    };
+  },
+  addLog(msg) {
+    this.state.log.push(msg);
+    if (this.state.log.length > 50) this.state.log = this.state.log.slice(-50);
+    refreshLog();
+  },
+  checkTitles() {
+    const s = this.state, out = [];
+    for (const t of TITLE_CONDITIONS) {
+      if (!s.unlocked_titles.includes(t.name) && t.check(s)) {
+        s.unlocked_titles.push(t.name);
+        out.push(t.name);
+      }
+    }
+    for (const name of out) {
+      this.addLog(`칭호 [${name}]을(를) 얻었습니다.`);
+      showTitlePopup(name);
+    }
+    return out;
+  },
+  enhLevel(name) { return (this.state.enhance||{})[name] || 0; },
+  enhBonusOf(name) {
+    const it = ITEMS.find(i=>i.name===name);
+    if (!it) return 0;
+    return Math.ceil(it.dmg * 0.12) * this.enhLevel(name);   /* 강화 1단계당 기본 공격력의 12% */
+  },
+  getEquipped() {   /* 실제 장착 무기: 직접 선택 > 최강 자동 */
+    const s = this.state, e = s.equipped_weapon;
+    if (e && s.inventory.includes(e)) return e;
+    const best = this.getBestItem();
+    return ITEMS.some(i=>i.name===best) ? best : null;
+  },
+  getTotalAtk() {
+    const s = this.state;
+    const base = 10 + (s.level - 1) * 5;
+    const eq = this.getEquipped();
+    let bonus = 0;
+    if (eq) { const it = ITEMS.find(i=>i.name===eq); if (it) bonus = it.dmg + this.enhBonusOf(eq); }
+    return { base, bonus, total: base + bonus };
+  },
+  getBestItem() {
+    const s = this.state; let best=null, bd=-1;
+    for (const n of s.inventory) {
+      const it = ITEMS.find(i=>i.name===n);
+      if (it && it.dmg > bd) { bd = it.dmg; best = n; }
+    }
+    return best || '비어 있음';
+  },
+  neededExp() { return this.state.level ** 2 * 20; },
+  updateInnAffinity() {
+    const inn = this.state.npc_affinity.inn;
+    inn.count += 1;
+    if (inn.count >= 60) inn.grade = 'best';
+    else if (inn.count >= 30) inn.grade = 'friend';
+    this.checkTitles();
+  },
+  updateShopAffinity(itemName) {
+    const shop = this.state.npc_affinity.shop;
+    if (!shop.bought.includes(itemName)) shop.bought.push(itemName);
+    if (shop.bought.includes('성검')) shop.grade = 'best';
+    else if (shop.bought.includes('강철 대검')) shop.grade = 'friend';
+    this.checkTitles();
+  },
+  updateChefAffinity(foodName) {
+    const chef = this.state.npc_affinity.chef;
+    chef.food_count[foodName] = (chef.food_count[foodName]||0) + 1;   /* 통계용 기록은 유지 */
+    const f = FOODS.find(x => x.name === foodName);
+    chef.spent = (chef.spent||0) + (f ? f.price : 0);
+    this.applyChefGrade(chef);
+    this.checkTitles();
+  },
+  applyChefGrade(chef) {   /* 지출액 기준, 상향 전용 (기존 등급 강등 없음) */
+    if (chef.spent >= 100000) chef.grade = 'best';
+    else if (chef.spent >= 20000 && chef.grade === 'normal') chef.grade = 'friend';
+  },
+  saveGame(slot) {
+    try {
+      store.set('pepe_save_'+slot, JSON.stringify({ data:this.state, v:1, t:Date.now() }));
+      if (typeof Cloud !== 'undefined' && Cloud.uid) Cloud.pushRanking(this.state);   /* 명예의 전당 등재 */
+      this.addLog(`슬롯 ${slot}에 저장 완료!`);
+      return true;
+    } catch(e) { this.addLog('저장 실패: '+e); return false; }
+  },
+  loadGame(slot) {
+    const raw = store.get('pepe_save_'+slot);
+    if (!raw) return 'empty';
+    try {
+      const parsed = JSON.parse(raw);
+      if (!parsed.data || !parsed.data.player_name) return 'corrupted';
+      this.resetData();
+      this.state = deepMerge(this.state, parsed.data);
+      /* [이관] 구버전 세이브: 음식별 주문 기록 → 누적 지출액 환산 (1회) */
+      const chef = this.state.npc_affinity.chef;
+      if (!chef.spent && chef.food_count && Object.keys(chef.food_count).length) {
+        chef.spent = Object.entries(chef.food_count).reduce((t,[n,c]) => {
+          const f = FOODS.find(x=>x.name===n); return t + (f ? f.price * c : 0);
+        }, 0);
+        this.applyChefGrade(chef);   /* 상향 전용이라 기존 등급은 안전 */
+      }
+      this.checkTitles();
+      this.addLog(`슬롯 ${slot} 로드 완료!`);
+      return 'ok';
+    } catch(e) { return 'corrupted'; }
+  },
+  slotInfo(slot) {
+    const raw = store.get('pepe_save_'+slot);
+    if (!raw) return ' [비어 있음]';
+    try {
+      const d = JSON.parse(raw).data;
+      const g = d.gold>=1e6 ? (d.gold/1e6).toFixed(1)+'M' : d.gold>=1000 ? Math.round(d.gold/1000)+'K' : d.gold.toLocaleString();
+      return ` [${d.player_name} / Lv.${d.level.toLocaleString()} / ${g} Gold]`;
+    } catch(e) { return ' [데이터 오류]'; }
+  }
+};
+engine.resetData();
+
+/* 플레이 시간 누적 */
+let TIME_ACTIVE = false;   /* 로그인/타이틀/이름설정에서는 플레이타임 정지 */
+setInterval(()=>{ if (TIME_ACTIVE && engine.state) engine.state.play_time += 0.5; }, 500);
+
+/* ---------- 칭호 팝업 ---------- */
+function showTitlePopup(name) {
+  const layer = document.getElementById('popup-layer');
+  const el = document.createElement('div');
+  el.className = 'title-popup';
+  el.innerHTML = `<div class="pp-head">칭호 해금!</div><div class="pp-name">[ ${name} ]</div>`;
+  layer.appendChild(el);
+  setTimeout(()=>el.remove(), 5100);
+}
+
