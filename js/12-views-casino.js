@@ -34,9 +34,9 @@ function showSlotMachine() {
     <div class="mid-title" style="position:absolute;left:250px;width:750px;top:88px;font-size:24px">슬롯머신</div>
     <div class="sub-text" style="position:absolute;left:250px;width:750px;top:127px">행운을 시험해보세요!</div>
     <div style="position:absolute;left:250px;width:750px;top:160px;text-align:center;font-size:13px;color:#c8c8c8" id="sl-balance"></div>
-    <div style="position:absolute;left:300px;top:182px;width:170px;text-align:center;font-size:13px;color:#c8c8c8;line-height:2.15">
-      <div>[ 배율표 ]</div>
-      ${SLOT_SYMBOLS.map(x=>`<div style="display:flex;justify-content:space-between;align-items:center;font-size:12px;height:27px"><img src="${ASSET_BASE}${x.img}" alt="" style="width:34px;height:24px;object-fit:contain" onerror="this.style.display='none'"><span>+${x.reward}G</span></div>`).join('')}
+    <div class="paytable" style="position:absolute;left:300px;top:152px;width:134px">
+      <div class="pt-head">배 율 표</div>
+      ${SLOT_SYMBOLS.map(x=>`<div class="pt-row"><img src="${ASSET_BASE}${x.img}" alt="" style="width:32px;height:22px;object-fit:contain" onerror="this.style.display='none'"><span>+${x.reward}G</span></div>`).join('')}
     </div>
     <div style="position:absolute;left:515px;top:205px;width:380px;height:130px;background:#1a1230;border:3px solid #7a4fd4;border-radius:10px;box-shadow:inset 0 4px 14px rgba(0,0,0,.6), 0 0 14px rgba(138,92,255,.25)"></div>
     <div class="slot-reels" style="position:absolute;left:530px;top:225px;width:350px;display:flex;justify-content:space-between">
@@ -134,6 +134,14 @@ function cardHTML(c, faceDown=false) {
   return `<div class="pcard ${red?'red':''}">
     <div class="tl">${c.r}<br>${c.s}</div><div class="ct">${c.s}</div></div>`;
 }
+/* 새로 추가된 카드에만 딜링 애니메이션 부여 (기존 카드는 무동작 — 원작 감각 유지) */
+function applyDeal(el, prevCount) {
+  if (!el) return 0;
+  [...el.children].forEach((k, i) => {
+    if (i >= prevCount) { k.classList.add('deal'); k.style.animationDelay = ((i - prevCount) * 0.07) + 's'; }
+  });
+  return el.children.length;
+}
 function bjValue(hand) {
   let total = 0, aces = 0;
   for (const c of hand) {
@@ -153,6 +161,7 @@ function showBlackjack() {
   const s = engine.state;
   const BET = 50;
   let deck, player, dealer, state = 'betting'; // betting / playing / dealer / result
+  let prevD = 0, prevP = 0;   /* 직전 렌더 시 카드 장수 (신규 카드 판별용) */
 
   screenEl.innerHTML = `
     <div class="bg-casino" style="position:absolute;inset:0"></div>
@@ -181,6 +190,8 @@ function showBlackjack() {
     document.getElementById('bj-dealer').innerHTML = dealer
       ? dealer.map((c,i)=>cardHTML(c, hideHole && i===0)).join('') : '';
     document.getElementById('bj-player').innerHTML = player ? player.map(c=>cardHTML(c)).join('') : '';
+    prevD = applyDeal(document.getElementById('bj-dealer'), prevD);
+    prevP = applyDeal(document.getElementById('bj-player'), prevP);
     document.getElementById('bj-dscore').textContent = dealer && !hideHole ? '('+bjValue(dealer)+')' :
       dealer ? '(?)' : '';
     document.getElementById('bj-pscore').textContent = player ? '('+bjValue(player)+')' : '';
@@ -203,6 +214,7 @@ function showBlackjack() {
   }
   function start() {
     if (s.gold < BET) { msg('골드가 부족합니다!', '#ff8c50'); return; }
+    prevD = 0; prevP = 0;
     s.gold -= BET;
     s.gold_spent_slot = (s.gold_spent_slot||0) + BET;
     engine.checkTitles();
@@ -326,6 +338,7 @@ function showHoldem() {
   const s = engine.state;
   const BASE = 100, MIN_GOLD = 200;
   let deck, pHole, aHole, community, stage='betting', pot=0, pBet=0, aBet=0, curBet=0;
+  let prevA = 0, prevC = 0, prevH = 0;   /* 직전 렌더 시 카드 장수 */
   let pTotal = 0, pActs = 0, pRaises = 0;
   let revealed = 0, busy = false;
 
@@ -367,6 +380,9 @@ function showHoldem() {
     document.getElementById('hd-hole').innerHTML = pHole ? pHole.map(c=>cardHTML(c)).join('') : '';
     document.getElementById('hd-comm').innerHTML = community
       ? community.map((c,i)=>cardHTML(c, i>=revealed)).join('') : '';
+    prevA = applyDeal(document.getElementById('hd-ai'), prevA);
+    prevC = applyDeal(document.getElementById('hd-comm'), prevC);
+    prevH = applyDeal(document.getElementById('hd-hole'), prevH);
     const panel = document.getElementById('hd-panel');
     if (stage==='betting' || stage==='result') {
       panel.innerHTML = `<button class="btn" style="width:290px" id="hd-start">게임 시작 (${BASE}골드 블라인드) (SPACE)</button>
@@ -387,6 +403,7 @@ function showHoldem() {
   }
   function start() {
     if (s.gold < MIN_GOLD) { msg(`골드가 부족합니다! (${MIN_GOLD}골드 이상 필요)`, '#ff8c50'); return; }
+    prevA = 0; prevC = 0; prevH = 0;
     s.gold -= BASE;
     s.gold_spent_slot = (s.gold_spent_slot||0) + BASE;
     engine.checkTitles();
@@ -580,7 +597,7 @@ function showEnhance() {
           </div>` : ''}
         <div class="enh-panel" id="enh-panel" style="position:absolute;left:175px;top:80px;width:400px;height:378px;padding:24px;text-align:center">
           ${weapon ? `
-            <div class="enh-img" id="enh-img" style="display:inline-block">${aimg(it.img, it.emoji, 120, '', 1.2)}</div>
+            <div class="enh-img" id="enh-img" style="display:inline-block;margin-top:18px">${aimg(it.img, it.emoji, 120, '', 1.2)}</div>
             <div style="font-size:19px;margin-top:26px" id="enh-name">${enhTag(weapon)}</div>
             <div style="font-size:13px;color:#c8c8c8;margin-top:12px">
               공격력 ${fmt(it.dmg)} <span style="color:#96d2ff">+ 강화 ${fmt(per*lv)}</span></div>

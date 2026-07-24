@@ -9,6 +9,7 @@ function showTitleScreen() {
     <div class="bg-night bg-set" style="position:absolute;inset:0"></div>
     <div style="position:absolute;inset:0;background:rgba(0,0,0,.51)"></div>
     <div class="center-panel">
+      <img class="title-icon" src="apple-touch-icon.png" alt="" draggable="false" onerror="this.remove()">
       <div class="game-logo">페페의모험</div>
       <div class="vcol" style="margin-top:8px">
         <button class="btn" style="width:280px;height:55px" id="t-new">게임 시작하기</button>
