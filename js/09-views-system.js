@@ -135,7 +135,10 @@ function showTitleBook(menuOpts, message='') {
         const unlocked = s.unlocked_titles.includes(t.name);
         const equipped = s.equipped_title === t.name;
         const label = equipped ? `${t.name} (장착중)` : unlocked ? t.name : '???';
-        return `<button class="btn ${equipped?'selected':''}" style="width:185px" data-title="${esc(t.name)}" data-un="${unlocked?1:0}">${esc(label)}</button>`;
+        return `<button class="btn tb-btn ${equipped?'selected':''}" data-title="${esc(t.name)}" data-un="${unlocked?1:0}">
+          <span class="tb-name">${esc(label)}</span>
+          <span class="tb-hint">${esc(t.hint)}</span>
+        </button>`;
       }).join('')}</div>`).join('')}
       <button class="btn" style="width:250px;margin-top:10px" id="tb-back">◀ 돌아가기</button>
     </div>`;

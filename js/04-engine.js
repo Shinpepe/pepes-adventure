@@ -32,7 +32,7 @@ const engine = {
       npc_affinity:{
         inn:{count:0,grade:'normal'},
         shop:{bought:[],grade:'normal'},
-        chef:{food_count:{},grade:'normal'}
+        chef:{food_count:{},spent:0,grade:'normal'}
       },
       unlocked_titles:['모험가'], equipped_title:'모험가',
       equipped_weapon:null,   /* 직접 장착한 무기 (null이면 최강 장비 자동 — 구세이브 호환) */
@@ -106,10 +106,15 @@ const engine = {
   },
   updateChefAffinity(foodName) {
     const chef = this.state.npc_affinity.chef;
-    chef.food_count[foodName] = (chef.food_count[foodName]||0) + 1;
-    if ((chef.food_count['소고기스테이크']||0) >= 5) chef.grade = 'best';
-    else if ((chef.food_count['고기스튜']||0) >= 5) chef.grade = 'friend';
+    chef.food_count[foodName] = (chef.food_count[foodName]||0) + 1;   /* 통계용 기록은 유지 */
+    const f = FOODS.find(x => x.name === foodName);
+    chef.spent = (chef.spent||0) + (f ? f.price : 0);
+    this.applyChefGrade(chef);
     this.checkTitles();
+  },
+  applyChefGrade(chef) {   /* 지출액 기준, 상향 전용 (기존 등급 강등 없음) */
+    if (chef.spent >= 100000) chef.grade = 'best';
+    else if (chef.spent >= 20000 && chef.grade === 'normal') chef.grade = 'friend';
   },
   saveGame(slot) {
     try {
@@ -127,6 +132,14 @@ const engine = {
       if (!parsed.data || !parsed.data.player_name) return 'corrupted';
       this.resetData();
       this.state = deepMerge(this.state, parsed.data);
+      /* [이관] 구버전 세이브: 음식별 주문 기록 → 누적 지출액 환산 (1회) */
+      const chef = this.state.npc_affinity.chef;
+      if (!chef.spent && chef.food_count && Object.keys(chef.food_count).length) {
+        chef.spent = Object.entries(chef.food_count).reduce((t,[n,c]) => {
+          const f = FOODS.find(x=>x.name===n); return t + (f ? f.price * c : 0);
+        }, 0);
+        this.applyChefGrade(chef);   /* 상향 전용이라 기존 등급은 안전 */
+      }
       this.checkTitles();
       this.addLog(`슬롯 ${slot} 로드 완료!`);
       return 'ok';

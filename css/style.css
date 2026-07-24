@@ -653,3 +653,12 @@ body { font-family:'MaplestoryLight', 'DungGeunMo','Malgun Gothic',sans-serif; c
 .hof-gold  { width:64px; text-align:right; color:#ffd76a; font-size:12px; flex-shrink:0; }
 .hof-medal { width:42px; text-align:center; color:#8fd4ae; flex-shrink:0; }
 .hof-time  { width:48px; text-align:right; color:#9aa4b0; font-size:11px; flex-shrink:0; }
+
+/* ---------- 칭호 도감 (칭호명 + 획득 방법 2줄) ---------- */
+.tb-btn { width:185px; padding:8px 6px 7px; line-height:1.2; }
+.tb-btn .tb-name { display:block; font-size:12px; }
+.tb-btn .tb-hint { display:block; font-size:9px; color:#8a94a0; margin-top:4px;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.tb-btn.selected .tb-hint { color:#a8dde2; }
+.tb-btn[data-un="0"] .tb-name { color:#8a94a0; }
+.tb-btn[data-un="0"] .tb-hint { color:#6a7480; }
