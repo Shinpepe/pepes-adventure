@@ -7,9 +7,9 @@ function showDesertEvent(areaId, medal, bossName) {
   clearView(); BGM.play('event');
   screenEl.innerHTML = `
     <div class="bg-event" style="position:absolute;inset:0"></div>
-    <div class="glow-orb" style="left:50%;top:44%;transform:translate(-50%,-50%)"></div>
-    <div class="vcol" style="position:absolute;left:0;right:0;bottom:150px">
-      <div style="font-size:16px;color:#c8c8c8">뭔가 신비한 기운이 느껴진다...</div>
+    <div class="glow-orb" style="left:50%;top:44%"></div>
+    <div class="vcol" style="position:absolute;left:0;right:0;bottom:80px">
+      <div style="font-size:16px;color:#c8c8c8;text-shadow:1px 1px 0 #000">뭔가 신비한 기운이 느껴진다...</div>
       <button class="btn" style="width:320px" id="de-go">느껴지는 기운을 따라간다 (ENTER)</button>
     </div>`;
   const go = ()=>showStatueEvent(areaId, medal, bossName);
@@ -20,15 +20,12 @@ function showDesertEvent(areaId, medal, bossName) {
 function showStatueEvent(areaId, medal, bossName) {
   clearView(); BGM.play('event');
   screenEl.innerHTML = `
-    <div class="bg-event" style="position:absolute;left:250px;top:0;width:750px;height:550px"></div>
-    <div class="main-area"><div class="main-dim"></div>
-      <div class="glow-orb" style="left:50%;top:44%;transform:translate(-50%,-50%)"></div>
-      <div style="position:absolute;left:50%;top:44%;transform:translate(-50%,-50%);font-size:130px;filter:drop-shadow(4px 6px 6px rgba(0,0,0,.5))">${aimg('event_cat.webp','🐈',130,'',1.7)}</div>
-      <div class="vcol" style="position:absolute;left:0;right:0;bottom:40px">
-        <button class="btn" style="width:320px" id="se-go">조각상 아래에 무언가 있다 (ENTER)</button>
-      </div>
-    </div>
-    ${sidebarHTML()}${logHTML()}`;
+    <div class="bg-event" style="position:absolute;inset:0"></div>
+    <div class="glow-orb" style="left:50%;top:44%"></div>
+    <div style="position:absolute;left:50%;top:calc(44% - 55px);transform:translate(-50%,-50%);font-size:130px;filter:drop-shadow(4px 6px 6px rgba(0,0,0,.5))">${aimg('event_cat.webp','🐈',130,'',1.7)}</div>
+    <div class="vcol" style="position:absolute;left:0;right:0;bottom:80px">
+      <button class="btn" style="width:320px" id="se-go">조각상 아래에 무언가 있다 (ENTER)</button>
+    </div>`;
   const go = ()=>showSkillLearn(areaId, medal, bossName);
   bindBtn('se-go', go);
   currentKeyHandler = e => { if (e.key==='Enter') { SFX.click(); go(); } };
@@ -37,18 +34,15 @@ function showStatueEvent(areaId, medal, bossName) {
 function showSkillLearn(areaId, medal, bossName) {
   clearView(); BGM.play('event');
   screenEl.innerHTML = `
-    <div class="bg-event" style="position:absolute;left:250px;top:0;width:750px;height:550px"></div>
-    <div class="main-area"><div class="main-dim"></div>
-      <div class="glow-orb" style="left:50%;top:130px;transform:translateX(-50%)"></div>
-      <div style="position:absolute;left:50%;top:70px;transform:translateX(-50%);font-size:110px;filter:drop-shadow(4px 6px 6px rgba(0,0,0,.5))">${aimg('skill.webp','📜',110,'',1.6)}</div>
-      <div class="vcol" style="position:absolute;left:0;right:0;bottom:30px;gap:10px">
-        <div style="font-size:15px;text-shadow:1px 1px 0 #000">새로운 스킬을 배웠습니다. 스킬 이름을 정해주세요.</div>
-        <div style="font-size:12px;color:#b4b4b4">(8글자 이내)</div>
-        <input class="text-input" id="skill-input" maxlength="8" autocomplete="off">
-        <button class="btn" style="width:200px;height:48px" id="sk-ok">확인 (ENTER)</button>
-      </div>
-    </div>
-    ${sidebarHTML()}${logHTML()}`;
+    <div class="bg-event" style="position:absolute;inset:0"></div>
+    <div class="glow-orb" style="left:50%;top:44%"></div>
+    <div style="position:absolute;left:50%;top:44%;transform:translate(-50%,-50%);font-size:110px;filter:drop-shadow(4px 6px 6px rgba(0,0,0,.5))">${aimg('skill.webp','📜',110,'',1.6)}</div>
+    <div class="vcol" style="position:absolute;left:0;right:0;bottom:56px;gap:10px">
+      <div style="font-size:15px;text-shadow:1px 1px 0 #000">새로운 스킬을 배웠습니다. 스킬 이름을 정해주세요.</div>
+      <div style="font-size:12px;color:#b4b4b4">(8글자 이내)</div>
+      <input class="text-input" id="skill-input" maxlength="8" autocomplete="off">
+      <button class="btn" style="width:200px;height:48px" id="sk-ok">확인 (ENTER)</button>
+    </div>`;
   const input = document.getElementById('skill-input');
   input.focus();
   function confirm() {

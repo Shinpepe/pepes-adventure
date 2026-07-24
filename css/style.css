@@ -427,6 +427,7 @@ body { font-family:'MaplestoryLight', 'DungGeunMo','Malgun Gothic',sans-serif; c
 
 /* ---------- 글로우 ---------- */
 .glow-orb { position:absolute; width:160px; height:160px; border-radius:50%;
+            margin:-80px 0 0 -80px;   /* left/top 지점이 '중심'이 되도록 — 펄스 애니메이션의 transform과 충돌하지 않는 중앙정렬 */
             background:radial-gradient(circle,#ffffff 0%,#ffdc32 40%,rgba(255,220,50,0) 70%);
             animation:glowpulse 2.4s ease-in-out infinite; pointer-events:none; }
 @keyframes glowpulse { 0%,100%{transform:scale(1); opacity:.75} 50%{transform:scale(1.35); opacity:1} }

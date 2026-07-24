@@ -144,7 +144,7 @@ function showDialogScene(opts) {
       <img src="${ASSET_BASE}${cafeImg}" alt="" draggable="false"
         style="position:absolute;left:150px;top:0;width:700px;height:700px;object-fit:cover"
         onerror="document.getElementById('date-fb').style.display='flex';this.remove()">` : ''}
-    ${bigEmoji ? `<div style="position:absolute;left:0;right:0;top:60px;text-align:center;filter:drop-shadow(0 0 30px rgba(0,0,0,.8))">${aimg(bigImg,`<span style="filter:brightness(0.25)">${bigEmoji}</span>`,230,'',1.35)}</div>` : ''}
+    ${bigEmoji ? `<div style="position:absolute;left:0;right:0;top:120px;text-align:center;filter:drop-shadow(0 0 30px rgba(0,0,0,.8))">${aimg(bigImg,`<span style="filter:brightness(0.25)">${bigEmoji}</span>`,230,'',1.35)}</div>` : ''}
     <div class="dialog-box ${system?'system':cafe?'date':''}" style="${cafe?'left:170px;right:170px;bottom:110px;height:100px':'left:150px;right:150px;bottom:130px;height:200px'}">
       <div class="speaker-tag" id="dlg-speaker" style="display:none"></div>
       <div id="dlg-text" style="white-space:pre-line"></div>
